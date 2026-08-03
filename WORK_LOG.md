@@ -17,3 +17,4 @@
 - 主目錄與三篇文章頁尾加入 `wesley.lin@leading4elite.com` mailto 連結，並統一文章頁尾與主目錄的 QR Code、內容與欄位對齊；已完成 Chrome 檢查。
 - 依使用者回饋，Email 改為 Gmail compose URL，已重新建置並在 Chrome 確認 href 正確。
 - 依使用者回饋，文章頁改用與主目錄相同的 250px 左欄、70px 間距與彈性右欄；品牌對齊左欄，頁尾內容對齊右欄；已完成 Chrome 檢查。
+- Netlify 會員升級後重新部署成功；production URL 為 https://one-page-leadership-hub.netlify.app，curl 確認 HTTP 200。

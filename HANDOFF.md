@@ -24,3 +24,4 @@ Article 03 的內容主線為：確認事實、辨認解讀、找到自己的承
 - 所有頁尾均包含精萃領導™學習中心、林祖威教練、`wesley.lin@leading4elite.com` mailto 連結與 LINE QR Code。
 - Email 連結使用 Gmail 寫信網址；需先登入 Google 才能直接進入寫信畫面。
 - 文章頁桌面版欄位與主目錄一致；上方品牌對齊左側章節欄，頁尾品牌與聯絡資訊對齊右側文章欄。
+- Netlify site：`one-page-leadership-hub`；公開網址：https://one-page-leadership-hub.netlify.app；建置指令為 `python3 scripts/build_article_hub.py`，發布目錄為 `.`。
