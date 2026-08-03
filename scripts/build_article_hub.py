@@ -53,11 +53,13 @@ def questions_html(items):
     return ''.join(blocks)
 
 def tools_html(items):
-    return ''.join(f'<aside class="reading-tool"><span class="tool-label">{html.escape(x["label"])}</span><h3>{html.escape(x["title"])}</h3><p>{html.escape(x["body"])}</p></aside>' for x in items)
+    extension='使用時可先在一個真實工作情境中填寫，完成後再回看結果與影響；如果發現記錄仍然太抽象，就補上一個具體事件、對話或下一步，讓這張工具卡不只幫助思考，也能留下下次回饋與修正的依據。'
+    return ''.join(f'<aside class="reading-tool"><span class="tool-label">{html.escape(x["label"])}</span><h3>{html.escape(x["title"])}</h3><p>{html.escape(x["body"] + extension)}</p></aside>' for x in items)
 
 def build_article(d, md):
     t=TEMPLATE.read_text(); replacements={'TITLE':d['title'],'SUBTITLE':d.get('subtitle','把觀點帶回一個可觀察的工作行動'),'PROJECT_TITLE':'精萃領導™學習中心','NUMBER':d['id'].split('_')[-1],'CATEGORY':d['category'],'READING_MINUTES':str(d['reading_minutes']),'SUMMARY':d['summary'],'START_PROMPT':d['start_prompt'],'ORIENTATION':''.join('<li>'+html.escape(x)+'</li>' for x in d['orientation']),'QUICK_SCAN':scan_html(d['quick_scan']),'ARTICLE_HTML':md_to_html(md),'TOOLS':tools_html(d.get('tools',[])),'CASE':d['case'],'QUESTIONS':questions_html(d['questions']),'ARTICLE_DATA':json.dumps(d,ensure_ascii=False)}
     for k,v in replacements.items(): t=t.replace('{{'+k+'}}',v)
+    t=t.replace('href="assets/article-learning.css"','href="assets/article-learning.css?v=20260804"')
     t=t.replace('先讀懂，再帶回現場','實用概念').replace('把觀點帶回工作現場','帶回現場').replace('整理一個可觀察的焦點','整理焦點').replace('把觀察留下來','留下觀察').replace('只承諾一個小型試做','我的實踐')
     t=t.replace('<div class="assess">','<details class="self-review"><summary><span><small>SELF REVIEW</small><strong>自我整理（4題）</strong></span><b>點擊展開／收起</b></summary><div class="self-review-body"><div class="assess">').replace('<p id="assessmentMessage" class="assessment-message" aria-live="polite"></p><div id="assessmentResult" class="result"></div></section>','<p id="assessmentMessage" class="assessment-message" aria-live="polite"></p><div id="assessmentResult" class="result"></div></div></details></section>')
     return t
