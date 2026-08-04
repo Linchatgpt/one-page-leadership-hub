@@ -89,6 +89,14 @@ def build_article(d, md):
     return t
 
 def main():
+    missing=[]
+    for folder in sorted(ARTICLES.iterdir()):
+        if not folder.is_dir(): continue
+        d=json.loads((folder/'article.json').read_text())
+        image=d.get('hero_image','')
+        if image and not (ROOT/image).is_file(): missing.append(f'{d.get("id", folder.name)}: {image}')
+    if missing:
+        raise FileNotFoundError('Missing hero image asset(s): ' + '; '.join(missing))
     cards=[]
     for folder in sorted(ARTICLES.iterdir()):
         if not folder.is_dir(): continue
