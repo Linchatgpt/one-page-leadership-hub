@@ -5,7 +5,7 @@ import html, json, re
 
 ROOT=Path(__file__).resolve().parents[1]; ARTICLES=ROOT/'content/articles'; TEMPLATE=ROOT/'templates/article_learning_template.html'
 SITE_URL='https://leading4elite.com/'
-SUBSCRIPTION_URL='https://script.google.com/macros/s/AKfycbwRiDIo9LQegRiNJndHXBNrSHteJkUT4SUgIdUXwr5QgkvhgQlH49dENrnLiNUDNg8T/exec?source=%E7%B2%BE%E8%90%83%E9%A0%98%E5%B0%8E%E2%84%A2%E5%AD%B8%E7%BF%92%E4%B8%AD%E5%BF%83'
+SUBSCRIPTION_URL='https://script.google.com/macros/s/AKfycbzYRJwtPdcxHQvdcskw1culJfrb6q2-JqJ6F__To56XfvMw8VHDJEv6quyVmMAS8EIu/exec?source=%E7%B2%BE%E8%90%83%E9%A0%98%E5%B0%8E%E2%84%A2%E5%AD%B8%E7%BF%92%E4%B8%AD%E5%BF%83'
 
 def md_to_html(text):
     out=[]; para=[]; in_ul=False; summary_open=False; seen_h1=False
