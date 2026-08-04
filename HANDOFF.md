@@ -4,6 +4,8 @@
 
 目前 ARTICLE 01–07 均已依新版 One Page Hub 規格配置主題插圖；ARTICLE 04–07 的工具卡已用 Markdown inline markers 放置於相關閱讀段落後。
 
+One Page Hub 技能已補充 SEO 必檢規則：建置器提供全域技術 SEO，每篇文章仍須在 `article.json` 個別提供搜尋意圖、SEO 標題、摘要、主要／相關關鍵詞與搜尋問題。
+
 ## 建置
 
 ```bash
