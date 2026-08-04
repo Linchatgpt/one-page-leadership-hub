@@ -2,6 +2,8 @@
 
 本專案是由文章設定檔自動產生的 One-Page Leadership Hub。來源資料位於 `content/articles/article_XX/`，不要只直接修改生成 HTML。
 
+目前 ARTICLE 01–07 均已依新版 One Page Hub 規格配置主題插圖；ARTICLE 04–07 的工具卡已用 Markdown inline markers 放置於相關閱讀段落後。
+
 ## 建置
 
 ```bash
