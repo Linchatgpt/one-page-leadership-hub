@@ -4,6 +4,7 @@ from pathlib import Path
 import html, json, re
 
 ROOT=Path(__file__).resolve().parents[1]; ARTICLES=ROOT/'content/articles'; TEMPLATE=ROOT/'templates/article_learning_template.html'
+SITE_URL='https://leading4elite.com/'
 
 def md_to_html(text):
     out=[]; para=[]; in_ul=False; summary_open=False; seen_h1=False
@@ -12,6 +13,10 @@ def md_to_html(text):
         if para: out.append('<p>'+ '<br>'.join(para) +'</p>'); para=[]
     for raw in text.splitlines():
         line=raw.strip()
+        if line == '<!-- TOOL_1 -->':
+            flush(); out.append('__TOOL_1__'); continue
+        if line == '<!-- TOOL_2 -->':
+            flush(); out.append('__TOOL_2__'); continue
         if not line: flush(); continue
         if line.startswith('# '):
             flush()
@@ -54,10 +59,27 @@ def questions_html(items):
 
 def tools_html(items):
     extension='使用時可先在一個真實工作情境中填寫，完成後再回看結果與影響；如果發現記錄仍然太抽象，就補上一個具體事件、對話或下一步，讓這張工具卡不只幫助思考，也能留下下次回饋與修正的依據。'
-    return ''.join(f'<aside class="reading-tool"><span class="tool-label">{html.escape(x["label"])}</span><h3>{html.escape(x["title"])}</h3><p>{html.escape(x["body"] + extension)}</p></aside>' for x in items)
+    cards=[]
+    for x in items:
+        if x.get('steps') and x.get('explanation'):
+            steps='<br>'.join(html.escape(step) for step in x['steps'])
+            body=f'<p class="tool-steps"><strong>{steps}</strong></p><p>{html.escape(x["explanation"] + extension)}</p>'
+        else:
+            body=f'<p>{html.escape(x["body"] + extension)}</p>'
+        cards.append(f'<aside class="reading-tool"><span class="tool-label">{html.escape(x["label"])}</span><h3>{html.escape(x["title"])}</h3>{body}</aside>')
+    return ''.join(cards)
 
 def build_article(d, md):
-    t=TEMPLATE.read_text(); replacements={'TITLE':d['title'],'SUBTITLE':d.get('subtitle','把觀點帶回一個可觀察的工作行動'),'PROJECT_TITLE':'精萃領導™學習中心','NUMBER':d['id'].split('_')[-1],'CATEGORY':d['category'],'READING_MINUTES':str(d['reading_minutes']),'SUMMARY':d['summary'],'START_PROMPT':d['start_prompt'],'ORIENTATION':''.join('<li>'+html.escape(x)+'</li>' for x in d['orientation']),'QUICK_SCAN':scan_html(d['quick_scan']),'ARTICLE_HTML':md_to_html(md),'TOOLS':tools_html(d.get('tools',[])),'CASE':d['case'],'QUESTIONS':questions_html(d['questions']),'ARTICLE_DATA':json.dumps(d,ensure_ascii=False)}
+    t=TEMPLATE.read_text(); tools=tools_html(d.get('tools',[])); tool_parts=tools.split('</aside>')
+    has_inline_tools='<!-- TOOL_1 -->' in md or '<!-- TOOL_2 -->' in md
+    article_html=md_to_html(md).replace('__TOOL_1__', tool_parts[0]+'</aside>').replace('__TOOL_2__', '</aside>'.join(tool_parts[1:]))
+    image=d.get('hero_image','')
+    image_html=f'<figure class="article-hero-visual"><img src="{html.escape(image)}" alt="{html.escape(d.get("hero_image_alt","文章主題插圖"))}"></figure>' if image else ''
+    number=d['id'].split('_')[-1]; page=f'Article_Learning_Article{number}.html'; canonical=SITE_URL+page
+    image_url=SITE_URL+image if image else ''
+    schema={'@context':'https://schema.org','@type':'Article','headline':d.get('seo_title',d['title']),'description':d.get('meta_description',d['summary']),'inLanguage':'zh-Hant-TW','mainEntityOfPage':{'@type':'WebPage','@id':canonical},'author':{'@type':'Person','name':d.get('author_name','林祖威教練'),'url':d.get('author_url','https://leading4elite.com/about_wesley/')},'publisher':{'@type':'Organization','name':'精萃領導™學習中心'},'image':image_url}
+    replacements={'TITLE':d['title'],'SEO_TITLE':d.get('seo_title',d['title']+'｜精萃領導™學習中心'),'META_DESCRIPTION':d.get('meta_description',d['summary']),'CANONICAL_URL':canonical,'OG_IMAGE':image_url,'ARTICLE_SCHEMA':html.escape(json.dumps(schema,ensure_ascii=False),quote=False),'SUBTITLE':d.get('subtitle','把觀點帶回一個可觀察的工作行動'),'PROJECT_TITLE':'精萃領導™學習中心','NUMBER':number,'CATEGORY':d['category'],'READING_MINUTES':str(d['reading_minutes']),'SUMMARY':d['summary'],'START_PROMPT':d['start_prompt'],'ORIENTATION':''.join('<li>'+html.escape(x)+'</li>' for x in d['orientation']),'QUICK_SCAN':scan_html(d['quick_scan']),'ARTICLE_HTML':article_html,'TOOLS':'' if has_inline_tools else tools,'ARTICLE_IMAGE':image_html,'CASE':d['case'],'QUESTIONS':questions_html(d['questions']),'ARTICLE_DATA':json.dumps(d,ensure_ascii=False)}
+    t=t.replace('<section id="s1">','{{ARTICLE_IMAGE}}<section id="s1">')
     for k,v in replacements.items(): t=t.replace('{{'+k+'}}',v)
     t=t.replace('href="assets/article-learning.css"','href="assets/article-learning.css?v=20260804"')
     t=t.replace('先讀懂，再帶回現場','實用概念').replace('把觀點帶回工作現場','帶回現場').replace('整理一個可觀察的焦點','整理焦點').replace('把觀察留下來','留下觀察').replace('只承諾一個小型試做','我的實踐')
