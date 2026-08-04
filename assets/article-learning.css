@@ -30,3 +30,4 @@ main>section:target>.head{border-top-color:var(--gold)}
 .site-footer{max-width:1180px;margin:0 auto;padding:28px 5vw 48px;border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:24px}.site-footer div{display:grid;gap:4px}.site-footer strong,.site-footer a{font:18px Georgia;color:var(--ink)}.site-footer a{color:var(--sage);font-weight:700}.site-footer img{width:96px;height:96px;object-fit:contain;border:1px solid var(--line)}
 .article-footer{max-width:none;padding-left:0;padding-right:0}
 @media(max-width:700px){.site-footer{align-items:flex-start}.site-footer img{width:82px;height:82px}}
+.article-hero-visual{display:block;width:100%;max-width:920px;min-width:0;box-sizing:border-box;margin:0 auto 34px;background:#f7f0df;overflow:hidden}.article-hero-visual img{display:block;width:100%;max-width:100%;height:auto;max-height:360px;object-fit:cover;box-sizing:border-box}
