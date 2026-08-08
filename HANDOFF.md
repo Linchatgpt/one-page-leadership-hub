@@ -1,5 +1,9 @@
 # Handoff
 
+## 首頁音檔
+
+首頁顯示「播放摘要」文字與原生 audio controls；播放器位於文章連結之外，手機播放不會跳轉，同頁開始新摘要時會自動停止上一個摘要。音檔來源為 `audio_summaries/article_XX_summary.mp3`，由 `scripts/build_article_hub.py` 產生。
+
 本專案是由文章設定檔自動產生的 One-Page Leadership Hub。來源資料位於 `content/articles/article_XX/`，不要只直接修改生成 HTML。
 
 目前 ARTICLE 01–10 均已依新版 One Page Hub 規格配置主題插圖；ARTICLE 04–10 的工具卡已用 Markdown inline markers 放置於相關閱讀段落後。
