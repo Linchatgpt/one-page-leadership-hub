@@ -19,6 +19,10 @@ def md_to_html(text):
         if line == '<!-- TOOL_2 -->':
             flush(); out.append('__TOOL_2__'); continue
         if not line: flush(); continue
+        if line.startswith('### '):
+            flush()
+            out.append('<h3>'+html.escape(line[4:])+'</h3>')
+            continue
         if line.startswith('# '):
             flush()
             if not seen_h1: seen_h1=True

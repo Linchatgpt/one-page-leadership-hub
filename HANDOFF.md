@@ -2,10 +2,11 @@
 
 本專案是由文章設定檔自動產生的 One-Page Leadership Hub。來源資料位於 `content/articles/article_XX/`，不要只直接修改生成 HTML。
 
-目前 ARTICLE 01–09 均已依新版 One Page Hub 規格配置主題插圖；ARTICLE 04–09 的工具卡已用 Markdown inline markers 放置於相關閱讀段落後。
+目前 ARTICLE 01–10 均已依新版 One Page Hub 規格配置主題插圖；ARTICLE 04–10 的工具卡已用 Markdown inline markers 放置於相關閱讀段落後。
 
 One Page Hub 技能已補充 SEO 必檢規則：建置器提供全域技術 SEO，每篇文章仍須在 `article.json` 個別提供搜尋意圖、SEO 標題、摘要、主要／相關關鍵詞與搜尋問題。
 One Page Hub 技能與建置器也會在建置前檢查每篇文章的 `hero_image` 是否存在；缺少圖片時直接停止建置，避免生成破圖頁面。
+Markdown 來源中的 `###` 小標由建置器統一轉為 `<h3>`；不得讓原始 `###` 標記直接出現在生成 HTML。
 
 ## 建置
 
@@ -36,6 +37,8 @@ Article 03 的內容主線為：確認事實、辨認解讀、找到自己的承
 - 目前主目錄顯示 ARTICLE 01–06，ARTICLE 06 聚焦主管提問、任務交代與可回饋能力。
 - 目前主目錄顯示 ARTICLE 01–07，ARTICLE 07 聚焦 1:1 對話與工作現場。
 - 目前主目錄顯示 ARTICLE 01–09，ARTICLE 09 聚焦五步教練路徑、績效對話與責任追蹤。
+- 目前主目錄顯示 ARTICLE 01–10，ARTICLE 10 聚焦教練式傾聽、介入判斷與部屬解題能力。
+- 目前主目錄顯示 ARTICLE 01–11，ARTICLE 11 聚焦環境設計、降低工作錯誤與拖延，以及保留必要的績效責任。
 - 工作工具卡由建置器統一補上使用與回看說明；修改工具卡時應保留原本的步驟與文章專屬內容。
 - 01 深入閱讀的 `.reading-essay` 與 `.reading-tool` 使用主欄寬度；修改 CSS 後需更新 `article-learning.css?v=YYYYMMDD` 版本參數，避免本地或瀏覽器保留舊樣式。
 - 所有文章頁的 03 自我整理區塊預設收起；工具卡包含步驟與延伸說明；章節標題統一採精簡版本。
