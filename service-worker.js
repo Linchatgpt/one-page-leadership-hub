@@ -1,4 +1,4 @@
-const CACHE_NAME = 'leadership-hub-shell-v1';
+const CACHE_NAME = 'leadership-hub-shell-v2';
 const STATIC_SHELL = [
   './', './index.html', './assets/article-learning.css', './assets/article-learning.js',
   './manifest.webmanifest', './assets/icon-192.png', './assets/icon-512.png', './assets/apple-touch-icon.png'
