@@ -18,6 +18,8 @@ def md_to_html(text):
             flush(); out.append('__TOOL_1__'); continue
         if line == '<!-- TOOL_2 -->':
             flush(); out.append('__TOOL_2__'); continue
+        if line == '<!-- TOOL_3 -->':
+            flush(); out.append('__TOOL_3__'); continue
         if not line: flush(); continue
         if line.startswith('### '):
             flush()
@@ -80,8 +82,11 @@ def audio_card_html(number):
 
 def build_article(d, md):
     t=TEMPLATE.read_text(); tools=tools_html(d.get('tools',[])); tool_parts=tools.split('</aside>')
-    has_inline_tools='<!-- TOOL_1 -->' in md or '<!-- TOOL_2 -->' in md
-    article_html=md_to_html(md).replace('__TOOL_1__', tool_parts[0]+'</aside>').replace('__TOOL_2__', '</aside>'.join(tool_parts[1:]))
+    has_inline_tools='<!-- TOOL_1 -->' in md or '<!-- TOOL_2 -->' in md or '<!-- TOOL_3 -->' in md
+    article_html=md_to_html(md).replace('__TOOL_1__', tool_parts[0]+'</aside>')
+    for marker,index in [('__TOOL_2__',1),('__TOOL_3__',2)]:
+        if marker in article_html and index < len(tool_parts):
+            article_html=article_html.replace(marker, tool_parts[index]+'</aside>')
     image=d.get('hero_image','')
     image_html=f'<figure class="article-hero-visual"><img src="{html.escape(image)}" alt="{html.escape(d.get("hero_image_alt","文章主題插圖"))}"></figure>' if image else ''
     number=d['id'].split('_')[-1]; page=f'Article_Learning_Article{number}.html'; canonical=SITE_URL+page
