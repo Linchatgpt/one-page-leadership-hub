@@ -1,0 +1,28 @@
+{
+  "id": "article_14",
+  "layout": "whitepaper",
+  "audio": true,
+  "title": "企業教練三大服務面向",
+  "subtitle": "『教練』讓管理更簡單",
+  "category": "白皮書 · 企業教練服務",
+  "reading_minutes": 8,
+  "summary": "本白皮書整理企業教練的三大服務面向：職人效能教練、新職主管教練與高管變革教練，說明不同層級與情境下的服務定位。",
+  "seo_title": "『教練』讓管理更簡單：企業教練三大服務面向｜精萃領導™學習中心",
+  "meta_description": "以白皮書形式介紹職人效能教練、新職主管教練與高管變革教練三大企業教練服務面向，以及各自的服務對象、常見議題與協助重點。",
+  "primary_keyword": "企業教練服務",
+  "related_keywords": ["職人效能教練", "新職主管教練", "高管變革教練"],
+  "search_intent": "了解企業教練三大服務面向與適用情境",
+  "likely_search_questions": ["企業教練有哪些服務面向？", "新任主管適合哪一種教練？", "高管變革教練可以協助什麼？"],
+  "author_name": "林祖威教練",
+  "author_url": "https://leading4elite.com/about_wesley/",
+  "source_date": "2024年12月29日",
+  "source_note": "",
+  "pages": [
+    {"image": "assets/article_14/page-01.png", "alt": "企業教練三大服務面向白皮書封面"},
+    {"image": "assets/article_14/page-02.png", "alt": "企業教練情境與三大服務分類示意圖"},
+    {"image": "assets/article_14/page-03.png", "alt": "職人效能教練與新職主管教練的服務內容"},
+    {"image": "assets/article_14/page-04.png", "alt": "新職主管教練與高管變革教練的服務內容"},
+    {"image": "assets/article_14/page-05.png", "alt": "高管變革教練服務與聯絡資訊"}
+  ],
+  "pdf_download": "assets/article_14/coach-whitepaper.pdf"
+}

@@ -17,7 +17,7 @@
         deferredPrompt = null;
         bar.remove();
       } else {
-        bar.querySelector('.pwa-install-copy').textContent = 'iPhone／iPad：點分享，再選「加入主畫面」。';
+        bar.querySelector('.pwa-install-copy').innerHTML = 'iPhone／iPad：點右上角的分享按鈕 <span class="pwa-share-icon" aria-hidden="true">↥</span>（方框上箭頭），再選「加入主畫面」。';
       }
     });
     bar.querySelector('.pwa-install-close').addEventListener('click', function () { bar.remove(); });

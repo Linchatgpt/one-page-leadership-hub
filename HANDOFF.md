@@ -57,3 +57,15 @@ Article 03 的內容主線為：確認事實、辨認解讀、找到自己的承
 - 03 自我整理的 details 容器結構已修正；04 工作紀錄與 05 行動承諾保持在文章主欄內。
 - 04 工作紀錄與 05 行動承諾使用 `max-width: 920px`，與 03 自我整理外框及文章主欄對齊。
 - 目前主目錄顯示 ARTICLE 01–04；舊版被移除的原 article_01 已保留於 `content/archive/article_legacy_01/`，不會由建置器讀取。
+
+## PWA 與手機版經驗
+
+- PWA 已加入 `manifest.webmanifest`、`service-worker.js`、`pwa.js`、192／512／Apple touch icons 與 `PWA_PROFILE.md`；部署前需執行 `python3 scripts/check_pwa.py`。
+- 安裝提示採可關閉的懸浮式設計，不使用 modal；Mac／Android 由 `beforeinstallprompt` 安裝，iPhone／iPad 明確提示點右上角分享按鈕（方框上箭頭）再選加入主畫面。
+- standalone／`navigator.standalone`／`appinstalled` 用於避免從 App 模式重複顯示提示；瀏覽器分頁是否再次觸發安裝事件由瀏覽器決定。
+- 目錄桌面版維持四篇一組與雙欄；手機版必須一篇一列。手機 CSS 同時寫在共用 CSS 與生成首頁的 inline style，避免只改外部 CSS 後仍被舊規則影響。
+- 修改 CSS 後要更新 query-string 版本（例如 `article-learning.css?v=YYYYMMDD...`）並提高 Service Worker `CACHE_NAME`，否則手機可能持續看到舊版四格。
+- 本機手機測試不能使用手機自己的 `localhost`；要用 Mac 區網 IP 加埠號，兩台裝置需在同一 Wi-Fi。完整 PWA 安裝資格仍需 HTTPS 網址。
+- 最近一次 PWA／手機版部署 commit：`b15b044`；production URL：https://one-page-leadership-hub.netlify.app。
+- ARTICLE 14 為白皮書頁型，不套用一般管理文章的快問快答、評估與工具卡；來源內容保留最低修改原則，PDF 五頁視覺以 `assets/article_14/page-01.png` 至 `page-05.png` 沿用，原始 PDF 可下載。
+- ARTICLE 14 預覽若出現內容重複，確認不要同時顯示全文 HTML 與完整 PDF 頁面；目前以原始五頁視覺為主，避免白皮書版面混亂。

@@ -10,6 +10,8 @@ PWA_HEAD='<link rel="manifest" href="manifest.webmanifest"><meta name="theme-col
 PWA_SCRIPT='<script src="pwa.js" defer></script>'
 
 def inject_pwa(document):
+    if 'rel="manifest"' in document and 'src="pwa.js"' in document:
+        return document
     return document.replace('</head>', PWA_HEAD+'</head>').replace('</body>', PWA_SCRIPT+'</body>')
 
 def md_to_html(text):
@@ -81,7 +83,8 @@ def tools_html(items):
         cards.append(f'<aside class="reading-tool"><span class="tool-label">{html.escape(x["label"])}</span><h3>{html.escape(x["title"])}</h3>{body}</aside>')
     return ''.join(cards)
 
-def audio_card_html(number):
+def audio_card_html(number, enabled=True):
+    if not enabled: return ''
     src=f'audio_summaries/article_{number}_summary.mp3'
     return f'<div class="module-audio"><span class="audio-label">播放摘要</span><audio controls preload="none" aria-label="播放文章 {number} 摘要" src="{src}"></audio></div>'
 
@@ -106,6 +109,15 @@ def build_article(d, md):
     t=t.replace('<div class="assess">','<details class="self-review"><summary><span><small>SELF REVIEW</small><strong>自我整理（4題）</strong></span><b>點擊展開／收起</b></summary><div class="self-review-body"><div class="assess">').replace('<p id="assessmentMessage" class="assessment-message" aria-live="polite"></p><div id="assessmentResult" class="result"></div></section>','<p id="assessmentMessage" class="assessment-message" aria-live="polite"></p><div id="assessmentResult" class="result"></div></div></details></section>')
     return t
 
+def build_whitepaper(d, md):
+    number=d['id'].split('_')[-1]; page=f'Article_Learning_Article{number}.html'; canonical=SITE_URL+page
+    schema={'@context':'https://schema.org','@type':'Article','headline':d.get('seo_title',d['title']),'description':d.get('meta_description',d['summary']),'inLanguage':'zh-Hant-TW','mainEntityOfPage':{'@type':'WebPage','@id':canonical},'author':{'@type':'Person','name':d.get('author_name','林祖威教練'),'url':d.get('author_url','https://leading4elite.com/about_wesley/')},'publisher':{'@type':'Organization','name':'精萃領導™學習中心'}}
+    pages=''.join(f'<figure class="whitepaper-page"><img src="{html.escape(x["image"])}" alt="{html.escape(x["alt"])}"></figure>' for x in d.get('pages',[]))
+    # The rendered PDF pages already contain the original text and illustrations;
+    # do not duplicate the full extracted copy beside them in the visual whitepaper.
+    body=''
+    return inject_pwa(f'''<!doctype html><html lang="zh-Hant-TW"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{html.escape(d.get('seo_title',d['title']))}</title><meta name="description" content="{html.escape(d['meta_description'])}"><link rel="canonical" href="{canonical}"><meta property="og:type" content="article"><meta property="og:title" content="{html.escape(d.get('seo_title',d['title']))}"><meta property="og:description" content="{html.escape(d['meta_description'])}"><script type="application/ld+json">{html.escape(json.dumps(schema,ensure_ascii=False),quote=False)}</script><link rel="stylesheet" href="assets/article-learning.css?v=20260814pwa1"></head><body><div class="top article-top"><a class="brand" href="index.html" aria-label="返回精萃領導TM學習中心"><i>LE</i> 精萃領導™學習中心</a><span class="save">WHITEPAPER</span></div><div class="whitepaper-layout"><aside class="whitepaper-side"><small>ARTICLE {number} · WHITEPAPER</small><h2>{html.escape(d['title'])}</h2><p>{html.escape(d.get('source_date',''))}</p><a class="whitepaper-download" href="{html.escape(d['pdf_download'])}" download>下載原始 PDF</a></aside><main class="whitepaper-main"><header class="whitepaper-hero"><small class="kicker">{html.escape(d['category'])}</small><h1>{html.escape(d['title'])}</h1><h2>{html.escape(d['subtitle'])}</h2><p class="lead">{html.escape(d['summary'])}</p><p class="whitepaper-note">{html.escape(d.get('source_note',''))}</p><p class="whitepaper-author">{html.escape(d.get('source_date',''))} · By {html.escape(d.get('author_name','林祖威教練'))}</p></header><section class="whitepaper-reading"><div class="reading-essay">{body}</div>{pages}</section><footer class="site-footer article-footer"><div><strong>精萃領導™學習中心</strong><a href="https://leading4elite.com/about_wesley/" target="_blank" rel="noopener">林祖威教練</a><a href="https://mail.google.com/mail/?view=cm&amp;fs=1&amp;to=wesley.lin%40leading4elite.com" target="_blank" rel="noopener">wesley.lin@leading4elite.com</a><a class="subscribe-link" href="{SUBSCRIPTION_URL}" target="_blank" rel="noopener">訂閱學習更新</a></div><img src="assets/line-qr.png" alt="加入 LINE 諮詢領眾課程"></footer></main></div></body></html>''')
+
 def main():
     missing=[]
     for folder in sorted(ARTICLES.iterdir()):
@@ -115,7 +127,7 @@ def main():
         if image and not (ROOT/image).is_file(): missing.append(f'{d.get("id", folder.name)}: {image}')
         number=d.get('id', folder.name).split('_')[-1]
         audio=ROOT/'audio_summaries'/f'article_{number}_summary.mp3'
-        if not audio.is_file(): missing.append(f'{d.get("id", folder.name)}: {audio.relative_to(ROOT)}')
+        if d.get('audio', True) and not audio.is_file(): missing.append(f'{d.get("id", folder.name)}: {audio.relative_to(ROOT)}')
     if missing:
         raise FileNotFoundError('Missing hero image asset(s): ' + '; '.join(missing))
     article_folders=[folder for folder in sorted(ARTICLES.iterdir(), reverse=True) if folder.is_dir()]
@@ -123,11 +135,12 @@ def main():
     for start in range(0,len(article_folders),4):
         group_cards=[]
         for folder in article_folders[start:start+4]:
-            d=json.loads((folder/'article.json').read_text()); page=f'Article_Learning_{d["id"].replace("article_", "Article")}.html'; article_html=build_article(d,(folder/'article.md').read_text()).replace('<div class="top">','<div class="top article-top">').replace('<footer class="site-footer">','<footer class="site-footer article-footer">').replace('<a href="https://leading4elite.com/about_wesley/" target="_blank" rel="noopener">林祖威教練</a></div>','<a href="https://leading4elite.com/about_wesley/" target="_blank" rel="noopener">林祖威教練</a><a href="mailto:wesley.lin@leading4elite.com">wesley.lin@leading4elite.com</a></div>'); article_html=article_html.replace('mailto:wesley.lin@leading4elite.com','https://mail.google.com/mail/?view=cm&amp;fs=1&amp;to=wesley.lin%40leading4elite.com').replace('href="https://mail.google.com/mail/?view=cm&amp;fs=1&amp;to=wesley.lin%40leading4elite.com">','href="https://mail.google.com/mail/?view=cm&amp;fs=1&amp;to=wesley.lin%40leading4elite.com" target="_blank" rel="noopener">'); (ROOT/page).write_text(article_html)
-            article_html=article_html.replace('</div><img src="assets/line-qr.png"', '<a class="subscribe-link" href="'+SUBSCRIPTION_URL+'" target="_blank" rel="noopener">訂閱學習更新</a></div><img src="assets/line-qr.png"')
+            d=json.loads((folder/'article.json').read_text()); page=f'Article_Learning_{d["id"].replace("article_", "Article")}.html'; article_html=(build_whitepaper(d,(folder/'article.md').read_text()) if d.get('layout')=='whitepaper' else build_article(d,(folder/'article.md').read_text())).replace('<div class="top">','<div class="top article-top">').replace('<footer class="site-footer">','<footer class="site-footer article-footer">').replace('<a href="https://leading4elite.com/about_wesley/" target="_blank" rel="noopener">林祖威教練</a></div>','<a href="https://leading4elite.com/about_wesley/" target="_blank" rel="noopener">林祖威教練</a><a href="mailto:wesley.lin@leading4elite.com">wesley.lin@leading4elite.com</a></div>'); article_html=article_html.replace('mailto:wesley.lin@leading4elite.com','https://mail.google.com/mail/?view=cm&amp;fs=1&amp;to=wesley.lin%40leading4elite.com').replace('href="https://mail.google.com/mail/?view=cm&amp;fs=1&amp;to=wesley.lin%40leading4elite.com">','href="https://mail.google.com/mail/?view=cm&amp;fs=1&amp;to=wesley.lin%40leading4elite.com" target="_blank" rel="noopener">'); (ROOT/page).write_text(article_html)
+            if 'class="subscribe-link"' not in article_html:
+                article_html=article_html.replace('</div><img src="assets/line-qr.png"', '<a class="subscribe-link" href="'+SUBSCRIPTION_URL+'" target="_blank" rel="noopener">訂閱學習更新</a></div><img src="assets/line-qr.png"')
             (ROOT/page).write_text(inject_pwa(article_html))
             number=d["id"].split("_")[-1]
-            group_cards.append(f'<div class="map-card"><a class="map-card-link" href="{page}"><small>ARTICLE {number} · {html.escape(d["category"])} · {d["reading_minutes"]} MIN READ</small><h3>{html.escape(d["title"])}</h3><p>{html.escape(d["summary"])}</p><span>開始這篇學習 →</span></a>{audio_card_html(number)}</div>')
+            group_cards.append(f'<div class="map-card"><a class="map-card-link" href="{page}"><small>ARTICLE {number} · {html.escape(d["category"])} · {d["reading_minutes"]} MIN READ</small><h3>{html.escape(d["title"])}</h3><p>{html.escape(d["summary"])}</p><span>開始這篇學習 →</span></a>{audio_card_html(number,d.get("audio",True))}</div>')
         card_groups.append('<div class="map-group'+(' is-active' if start==0 else '')+'" data-group="'+str(start//4)+'">'+''.join(group_cards)+'</div>')
     cards=''.join(card_groups)
     for folder in []:

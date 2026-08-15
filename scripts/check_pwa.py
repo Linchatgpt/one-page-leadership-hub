@@ -36,7 +36,7 @@ def main():
         assert 'pwa.js' in html, f'missing install controller: {page.name}'
     pwa = (ROOT / 'pwa.js').read_text()
     assert 'beforeinstallprompt' in pwa and 'appinstalled' in pwa
-    assert '點分享' in pwa
+    assert '右上角的分享按鈕' in pwa and 'pwa-share-icon' in pwa
     print('PWA checks: OK')
 
 if __name__ == '__main__':

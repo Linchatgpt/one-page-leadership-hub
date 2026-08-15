@@ -9,7 +9,7 @@ Display: standalone
 Start URL: ./index.html
 Scope: ./
 Install button label: 安裝到桌面
-iOS guidance: Safari 分享 → 加入主畫面
+iOS guidance: 點右上角分享按鈕（方框上箭頭）→ 加入主畫面
 Cache static shell: yes
 Cache exclusions: /api/, /.netlify/functions/, /audio_summaries/, /uploads/, account, login, logout, membership, checkout, billing, subscribe, non-GET, cross-origin
 Deployment mode: deploy-on-request

@@ -54,3 +54,22 @@
 - 新增 ARTICLE 13「別讓在線變成管理噪音」，整理正念在注意力、情緒、會議、訊息與團隊制度中的管理應用，新增主題插圖及 MiniMax 摘要文字／MP3；已完成建置、圖片／音訊資產與靜態檢查，尚未發布。
 - 依使用者補充擴充 ARTICLE 13：整合 HERO 心理資本、90/10 能量管理、單工與斷開制度、彈性調整、數位工具與主管檢核表；同步重製摘要 MP3，完成建置與內容資產檢查，尚未發布。
 - 依使用者回饋收斂 ARTICLE 13：移除 Markdown `**` 顯示符號，新增第三個 inline 工具欄，將正念檢核表與四週試行表工具化，並刪除重複的四週試行正文；完成建置與內容檢查，尚未發布。
+- 依使用者回饋調整 ARTICLE 14：移除頁面上的製作說明與「白皮書原始版面」頁碼標注，保留白皮書原始圖片內容；完成重新建置與 PWA／HTML 檢查，尚未發布。
+- 依使用者需求為 ARTICLE 14 新增三焦點聲音摘要文字與 MiniMax MP3，目錄卡片已加入原生播放控制；完成音檔、建置與 PWA 檢查，尚未發布。
+
+## 2026-08-14｜PWA 與手機版驗證
+
+- 建立 PWA 安裝層：manifest、Service Worker、懸浮式安裝提示、standalone 偵測、iOS 分享選單指引與 192／512／Apple touch icons。
+- 依手機截圖修正懸浮提示：手機採雙欄提示結構，中文不再一字一行；iPhone／iPad 按鈕改為「查看加入方式」。
+- 依手機實測修正首頁文章列表：桌面維持四篇一組與雙欄；390×844 手機改為單欄、一篇一列。
+- 追查手機仍顯示四格的原因為舊 CSS／Service Worker／首頁 inline CSS 疊加；以 CSS query-string、Service Worker cache name 與首頁 inline mobile rule 同步更新解決。
+- 驗證指令：`python3 scripts/build_article_hub.py`、`python3 scripts/check_pwa.py`、`node --check pwa.js`、390×844 viewport 與 production resource checks 均通過。
+- 已部署 GitHub／Netlify production，commit `b15b044`；手機實測確認新版列表顯示成功。
+- 依使用者回饋補強 iPhone／iPad 安裝指引：明確指出右上角分享按鈕，加入方框上箭頭的可見符號與 `aria-hidden` 裝飾標記。
+
+## 2026-08-15｜ARTICLE 14 白皮書頁型
+
+- 讀取並視覺檢查使用者提供的 5 頁 PDF，確認其核心為企業教練三大服務面向，含封面照片、服務分類圖與三類教練說明圖。
+- 新增 ARTICLE 14 的 `layout: whitepaper` 分支：保留原文脈絡，使用 PDF 五頁 PNG 作為原始視覺版面，另提供原始 PDF 下載。
+- 建置器加入白皮書頁型與無音檔文章支援，並避免白皮書頁重複注入 PWA／訂閱元件；已完成建置、PWA、Python／JavaScript 與生成頁檢查。
+- 使用者回報 ARTICLE 14 視覺混亂；確認原因是完整文字與完整 PDF 頁面重複呈現，已改為只呈現白皮書導言、下載入口與五頁原始視覺，重新建置檢查通過。
