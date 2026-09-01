@@ -1,7 +1,7 @@
 import { getStore } from '@netlify/blobs';
 
 const json = (statusCode, body) => new Response(JSON.stringify(body), { status: statusCode, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
-const bodyOf = async (event) => { try { if (typeof Request !== 'undefined' && event instanceof Request) return await event.json(); return typeof event.body === 'string' ? JSON.parse(event.body || '{}') : (event.body || event.payload || {}); } catch { throw new Error('請求格式不是有效 JSON'); } };
+const bodyOf = async (event) => { try { if (typeof event.json === 'function') return await event.json(); if (typeof Request !== 'undefined' && event instanceof Request) return await event.json(); return typeof event.body === 'string' ? JSON.parse(event.body || '{}') : (event.body || event.payload || {}); } catch { throw new Error('請求格式不是有效 JSON'); } };
 const clean = (value) => typeof value === 'string' ? value.replace(/[\*#＊＃]/g, '') : value;
 const store = () => getStore({ name: 'leadership-articles', consistency: 'strong' });
 
