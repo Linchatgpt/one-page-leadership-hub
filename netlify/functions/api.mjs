@@ -8,7 +8,7 @@ const store = () => getStore({ name: 'leadership-articles', consistency: 'strong
 async function chat(system, user, max_tokens = 3000, asJson = true) {
   const key = process.env.AI_API_KEY;
   if (!key) throw new Error('正式環境尚未設定 AI_API_KEY');
-  const request = { model: process.env.AI_MODEL || 'gpt-5.6-luna', reasoning_effort: process.env.AI_REASONING_EFFORT || 'low', messages: [{ role: 'system', content: system }, { role: 'user', content: user }], max_completion_tokens: max_tokens };
+  const request = { model: process.env.AI_MODEL || 'gpt-5.6-luna', reasoning_effort: asJson ? 'none' : (process.env.AI_REASONING_EFFORT || 'low'), messages: [{ role: 'system', content: system }, { role: 'user', content: user }], max_completion_tokens: max_tokens };
   if (asJson) request.response_format = { type: 'json_object' };
   const response = await fetch(process.env.AI_API_ENDPOINT || 'https://api.openai.com/v1/chat/completions', { method: 'POST', headers: { 'content-type': 'application/json', authorization: `Bearer ${key}` }, body: JSON.stringify(request) });
   const data = await response.json();
