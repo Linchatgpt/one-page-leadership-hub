@@ -8,5 +8,6 @@ __pycache__/
 
 # Local API and voice configuration
 .env
+node_modules/
 .env.*
 !.env.example

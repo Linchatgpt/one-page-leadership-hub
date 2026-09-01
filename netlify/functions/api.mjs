@@ -5,13 +5,16 @@ const bodyOf = (event) => { try { return typeof event.body === 'string' ? JSON.p
 const clean = (value) => typeof value === 'string' ? value.replace(/[\*#＊＃]/g, '') : value;
 const store = () => getStore({ name: 'leadership-articles', consistency: 'strong' });
 
-async function chat(system, user, max_tokens = 3000) {
+async function chat(system, user, max_tokens = 3000, asJson = true) {
   const key = process.env.AI_API_KEY;
   if (!key) throw new Error('正式環境尚未設定 AI_API_KEY');
-  const response = await fetch(process.env.AI_API_ENDPOINT || 'https://api.openai.com/v1/chat/completions', { method: 'POST', headers: { 'content-type': 'application/json', authorization: `Bearer ${key}` }, body: JSON.stringify({ model: process.env.AI_MODEL || 'gpt-5.6-luna', reasoning_effort: process.env.AI_REASONING_EFFORT || 'low', messages: [{ role: 'system', content: system }, { role: 'user', content: user }], response_format: { type: 'json_object' }, max_completion_tokens: max_tokens }) });
+  const request = { model: process.env.AI_MODEL || 'gpt-5.6-luna', reasoning_effort: process.env.AI_REASONING_EFFORT || 'low', messages: [{ role: 'system', content: system }, { role: 'user', content: user }], max_completion_tokens: max_tokens };
+  if (asJson) request.response_format = { type: 'json_object' };
+  const response = await fetch(process.env.AI_API_ENDPOINT || 'https://api.openai.com/v1/chat/completions', { method: 'POST', headers: { 'content-type': 'application/json', authorization: `Bearer ${key}` }, body: JSON.stringify(request) });
   const data = await response.json();
   if (!response.ok) throw new Error(data.error?.message || 'AI 請求失敗');
-  return JSON.parse(data.choices?.[0]?.message?.content || '{}');
+  const content = data.choices?.[0]?.message?.content || '';
+  return asJson ? JSON.parse(content || '{}') : content;
 }
 
 async function generateArticle(payload) {
@@ -24,7 +27,7 @@ async function generateArticle(payload) {
 
 async function audioScript(payload) {
   const system = '你是繁體中文音訊編輯。只回傳 JSON，欄位只有 audio_script。根據文章寫約200至220個中文字的口播核心內容，固定開場與結尾會由系統加入，因此不要寫開場、結尾、標題、引號、Module編號、XML或時間控制符號。';
-  const result = await chat(system, `文章標題：${payload.title || ''}\n文章正文：\n${String(payload.body_markdown || '').slice(0, 12000)}`, 600);
+  const result = await chat(system, `文章標題：${payload.title || ''}\n文章正文：\n${String(payload.body_markdown || '').slice(0, 12000)}`, 600, false);
   result.audio_script = String(result.audio_script || result.content || result.text || '').replace(/<#[^>]+#>|\bModule\s+\d+\s*[,，]?/gi, '').replace(/[\*#＊＃]/g, '').trim();
   if (!result.audio_script) throw new Error('AI 沒有回傳有效的口播稿');
   return result;
