@@ -232,6 +232,7 @@ def main():
     index=index.replace('<a href="https://leading4elite.com/about_wesley/" target="_blank" rel="noopener">林祖威教練</a></div>','<a href="https://leading4elite.com/about_wesley/" target="_blank" rel="noopener">林祖威教練</a><a href="mailto:wesley.lin@leading4elite.com">wesley.lin@leading4elite.com</a></div>')
     index=index.replace('mailto:wesley.lin@leading4elite.com','https://mail.google.com/mail/?view=cm&amp;fs=1&amp;to=wesley.lin%40leading4elite.com').replace('href="https://mail.google.com/mail/?view=cm&amp;fs=1&amp;to=wesley.lin%40leading4elite.com">','href="https://mail.google.com/mail/?view=cm&amp;fs=1&amp;to=wesley.lin%40leading4elite.com" target="_blank" rel="noopener">').replace('不保存網上副本）','不保存網上副本')
     index=index.replace('</div><img src="assets/line-qr.png"', '<a class="subscribe-link" href="'+SUBSCRIPTION_URL+'" target="_blank" rel="noopener">訂閱學習更新</a></div><img src="assets/line-qr.png"')
+    index=index.replace('</body>', '<script src="assets/published.js?v=20260902"></script></body>')
     (ROOT/'index.html').write_text(inject_pwa(index))
     admin_records=[]
     for folder in sorted(ARTICLES.iterdir(), reverse=True):

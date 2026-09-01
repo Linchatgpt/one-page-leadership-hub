@@ -35,5 +35,15 @@
   to = "/.netlify/functions/render-preview"
   status = 200
 
+[[redirects]]
+  from = "/api/list-published"
+  to = "/.netlify/functions/list-published"
+  status = 200
+
+[[redirects]]
+  from = "/article"
+  to = "/.netlify/functions/article"
+  status = 200
+
 [build.environment]
   PYTHON_VERSION = "3.13"

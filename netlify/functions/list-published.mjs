@@ -1,0 +1,2 @@
+import { getStore } from '@netlify/blobs';
+export default async()=>{const s=getStore({name:'leadership-articles',consistency:'strong'});const items=await s.list();const articles=[];for(const blob of items.blobs||[]){const a=await s.get(blob.key,{type:'json'});if(a?.status==='published')articles.push({id:a.id,title:a.title,subtitle:a.subtitle,summary:a.summary,category:a.category,reading_minutes:a.reading_minutes,hero_image:a.hero_image});}return new Response(JSON.stringify(articles),{headers:{'content-type':'application/json; charset=utf-8','cache-control':'no-store'}})};
