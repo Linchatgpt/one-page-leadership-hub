@@ -1,7 +1,7 @@
 import { getStore } from '@netlify/blobs';
 
 const json = (statusCode, body) => new Response(JSON.stringify(body), { status: statusCode, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
-const bodyOf = (event) => { try { return typeof event.body === 'string' ? JSON.parse(event.body || '{}') : (event.body || event.payload || {}); } catch { throw new Error('請求格式不是有效 JSON'); } };
+const bodyOf = async (event) => { try { if (typeof Request !== 'undefined' && event instanceof Request) return await event.json(); return typeof event.body === 'string' ? JSON.parse(event.body || '{}') : (event.body || event.payload || {}); } catch { throw new Error('請求格式不是有效 JSON'); } };
 const clean = (value) => typeof value === 'string' ? value.replace(/[\*#＊＃]/g, '') : value;
 const store = () => getStore({ name: 'leadership-articles', consistency: 'strong' });
 
@@ -46,12 +46,12 @@ async function summaryAudio(payload) {
   return { audio_data: `data:audio/mpeg;base64,${Buffer.from(data.data?.audio || '', 'hex').toString('base64')}` };
 }
 
-export default async (event) => {
+export default async (event, context, forcedPath = '') => {
   try {
-    const requestPath = event.path || new URL(event.rawUrl || 'http://localhost/.netlify/functions/api').pathname;
+    const requestPath = forcedPath || (event.path || new URL(event.url || event.rawUrl || 'http://localhost/.netlify/functions/api').pathname);
     const path = event.queryStringParameters?.route ? `/${event.queryStringParameters.route.replace(/^\//, '')}` : (requestPath.replace(/^.*\/\.netlify\/functions\/api/, '').replace(/^\/api/, '') || '/');
-    const payload = bodyOf(event);
-    const method = event.httpMethod || event.requestContext?.http?.method || event.request?.method || (path === '/health' ? 'GET' : 'POST');
+    const payload = await bodyOf(event);
+    const method = event.method || event.httpMethod || event.requestContext?.http?.method || event.request?.method || (path === '/health' ? 'GET' : 'POST');
     if (method === 'GET' && path === '/health') return json(200, { ok: true, project: 'one-page-leadership-hub', runtime: 'netlify-functions' });
     if (method !== 'POST') return json(405, { error: '只接受 POST 請求' });
     if (path === '/generate-learning-page') return json(200, await generateArticle(payload));

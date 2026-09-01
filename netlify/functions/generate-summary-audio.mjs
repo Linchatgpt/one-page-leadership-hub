@@ -1,2 +1,2 @@
 import api from './api.mjs';
-export default (event) => api({ ...event, path: '/generate-summary-audio' });
+export default (event, context) => api(event, context, '/generate-summary-audio');
