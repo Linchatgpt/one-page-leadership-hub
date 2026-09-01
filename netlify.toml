@@ -25,5 +25,10 @@
   to = "/.netlify/functions/publish-article"
   status = 200
 
+[[redirects]]
+  from = "/api/generate-article-image"
+  to = "/.netlify/functions/generate-article-image"
+  status = 200
+
 [build.environment]
   PYTHON_VERSION = "3.13"
