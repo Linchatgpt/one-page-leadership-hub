@@ -2,5 +2,28 @@
   command = "python3 scripts/build_article_hub.py"
   publish = "."
 
+[functions]
+  directory = "netlify/functions"
+
+[[redirects]]
+  from = "/api/generate-learning-page"
+  to = "/.netlify/functions/generate-learning-page"
+  status = 200
+
+[[redirects]]
+  from = "/api/generate-audio-script"
+  to = "/.netlify/functions/generate-audio-script"
+  status = 200
+
+[[redirects]]
+  from = "/api/generate-summary-audio"
+  to = "/.netlify/functions/generate-summary-audio"
+  status = 200
+
+[[redirects]]
+  from = "/api/publish-article"
+  to = "/.netlify/functions/publish-article"
+  status = 200
+
 [build.environment]
   PYTHON_VERSION = "3.13"
