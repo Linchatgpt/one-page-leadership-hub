@@ -27,7 +27,9 @@ async function generateArticle(payload) {
 
 async function audioScript(payload) {
   const system = '你是繁體中文音訊編輯。只回傳 JSON，欄位只有 audio_script。根據文章寫約200至220個中文字的口播核心內容，固定開場與結尾會由系統加入，因此不要寫開場、結尾、標題、引號、Module編號、XML或時間控制符號。';
-  const result = await chat(system, `文章標題：${payload.title || ''}\n文章正文：\n${String(payload.body_markdown || '').slice(0, 12000)}`, 600, false);
+  const raw = await chat(system, `文章標題：${payload.title || ''}\n文章正文：\n${String(payload.body_markdown || '').slice(0, 12000)}`, 600, false);
+  let result = raw;
+  if (typeof raw === 'string') { try { result = JSON.parse(raw); } catch { result = { audio_script: raw }; } }
   result.audio_script = String(result.audio_script || result.content || result.text || '').replace(/<#[^>]+#>|\bModule\s+\d+\s*[,，]?/gi, '').replace(/[\*#＊＃]/g, '').trim();
   if (!result.audio_script) throw new Error('AI 沒有回傳有效的口播稿');
   return result;
