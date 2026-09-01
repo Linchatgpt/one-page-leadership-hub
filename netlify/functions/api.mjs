@@ -38,7 +38,7 @@ async function audioScript(payload) {
 async function summaryAudio(payload) {
   const key = process.env.MINIMAX_API_KEY;
   if (!key) throw new Error('正式環境尚未設定 MINIMAX_API_KEY');
-  const text = String(payload.summary || '').replace(/<#[^>]+#>|\bModule\s+\d+\s*[,，]?/gi, '').replace(/[\*#＊＃]/g, '').trim();
+  const text = String(payload.summary ?? payload.audio_script ?? payload.text ?? '').replace(/<#[^>]+#>|\bModule\s+\d+\s*[,，]?/gi, '').replace(/[\*#＊＃]/g, '').trim();
   if (!text) throw new Error('口播稿內容為空');
   const response = await fetch(process.env.MINIMAX_API_ENDPOINT || 'https://api.minimax.io/v1/t2a_v2', { method: 'POST', headers: { 'content-type': 'application/json', authorization: `Bearer ${key}` }, body: JSON.stringify({ model: process.env.MINIMAX_MODEL || 'speech-2.8-hd', text, stream: false, language_boost: 'auto', output_format: 'hex', voice_setting: { voice_id: process.env.MINIMAX_VOICE_ID || 'moss_audio_39eb1dad-2537-11f1-9471-ba789c2c93f8', speed: 1, vol: 1, pitch: 0 }, audio_setting: { sample_rate: 32000, bitrate: 128000, format: 'mp3', channel: 1 } }) });
   const data = await response.json();
