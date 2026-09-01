@@ -19,7 +19,7 @@ async function chat(system, user, max_tokens = 3000, asJson = true) {
 
 async function generateArticle(payload) {
   const system = '你是繁體中文管理學習內容編輯。只回傳 JSON，不要 Markdown code fence。請產生 title（12個中文字以內）、subtitle、category、reading_minutes（整數）、summary（首頁方格用，1至2句）、start_prompt、orientation（4個字串）、quick_scan（3個物件）、body_markdown、case、questions（4個物件）、focus_tips、tools（1至2個物件）。正文使用 Markdown ## 小標題與標準表格；工具標記 <!-- TOOL_1 -->、<!-- TOOL_2 --> 必須放在最相關正文段落之後且不可集中在文末。不要輸出 JSON 物件到正文。';
-  const result = await chat(system, JSON.stringify({ title: clean(payload.title || ''), category: clean(payload.category || ''), source_text: clean(payload.source_text || '') }), 8000);
+  const result = await chat(system, JSON.stringify({ title: clean(payload.title || ''), category: clean(payload.category || ''), source_text: clean(String(payload.source_text || '').slice(0, 14000)) }), 5000);
   result.title = String(result.title || '').replace(/\s+/g, '').split(/[：:，,。！？!?]/, 1)[0].slice(0, 12);
   result.body_markdown = String(result.body_markdown || '').replace(/^\s*>\s?/gm, '').replace(/\n{3,}/g, '\n\n');
   return result;
