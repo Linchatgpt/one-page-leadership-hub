@@ -4,7 +4,15 @@
 
 首頁顯示「播放摘要」文字與原生 audio controls；播放器位於文章連結之外，手機播放不會跳轉，同頁開始新摘要時會自動停止上一個摘要。音檔來源為 `audio_summaries/article_XX_summary.mp3`，由 `scripts/build_article_hub.py` 產生。
 
+本專案的摘要音檔 Voice ID 固定，新增或重製音檔時必須沿用既定 Voice ID；不得使用 Mac 內建 `say` 或其他替代聲音，以維持全站聲音一致性。
+
+目前固定 Voice ID 為 `moss_audio_39eb1dad-2537-11f1-9471-ba789c2c93f8`，已儲存在本專案本機 `.env` 的 `MINIMAX_VOICE_ID`；MiniMax API Key 僅從本機秘密設定讀取，不放入本專案或公開檔案。
+
 本專案是由文章設定檔自動產生的 One-Page Leadership Hub。來源資料位於 `content/articles/article_XX/`，不要只直接修改生成 HTML。
+
+作者工作台入口為 `http://localhost:5200/author-admin.html`，由本專案的 `scripts/author_server.py` 提供；它只使用本專案的 localStorage 與 `.env`，不連接 One-Page Personal hub。
+
+網頁互動設計遵循共用規範：所有按鈕都要有 hover、focus、active 與處理中／完成回饋，詳見 `/Users/wes_mini/Projects/WEB_DESIGN_GUIDELINES.md`。
 
 目前 ARTICLE 01–10 均已依新版 One Page Hub 規格配置主題插圖；ARTICLE 04–10 的工具卡已用 Markdown inline markers 放置於相關閱讀段落後。
 

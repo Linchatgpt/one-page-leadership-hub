@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>文章工作台｜精萃領導™學習中心</title>
+  <link rel="stylesheet" href="assets/admin.css?v=20260822"><link rel="stylesheet" href="assets/admin-nav.css?v=20260822">
+<style>.ai-mode-panel{grid-column:1/-1;background:rgba(255,255,255,.68);border:1px solid var(--line);padding:18px 24px}.ai-mode-panel label{display:inline-flex;gap:8px;margin:10px 24px 0 0;color:var(--ink)}.ai-mode-panel label span{color:var(--muted);font-size:12px}</style></head>
+<body>
+  <header class="admin-top"><a class="brand" href="index.html"><i>LE</i> 精萃領導™學習中心</a><nav><a href="index.html">回到學習中心</a></nav></header>
+  <main class="admin-shell">
+    <section class="admin-intro"><small>AUTHOR DESK · LEADERSHIP HUB</small><h1>建立文章</h1><p>這是 Leadership hub 專用的本機編輯工作台。草稿先保存在此瀏覽器，確認後可匯出備份，再由建置器更新正式網站。</p></section>
+    <section class="admin-layout">
+    <section class="ai-mode-panel"><small>CONTENT MODE</small><h2>文章建立方式</h2><label><input type="radio" name="generation_mode" value="import"> 直接導入 <span>自行輸入與修改全部內容</span></label><label><input type="radio" name="generation_mode" value="basic"> 基礎 AI 整理 <span>保留原意，整理文字與排版</span></label><label><input type="radio" name="generation_mode" value="advanced" checked> 進階 AI <span>產生符合 Leadership hub 的完整學習頁</span></label></section>
+      <aside class="article-list-panel"><div class="panel-head"><div><small>CONTENT LIBRARY</small><h2>文章庫</h2></div><button id="newArticle" class="button primary">新增文章</button></div><div class="file-actions"><button id="uploadArticle" type="button" class="button quiet">上傳文章檔案</button><button id="exportArticles" type="button" class="button quiet">匯出備份</button><input id="articleFile" type="file" accept=".txt,.md,.markdown,.pdf,text/plain,text/markdown,application/pdf" hidden></div><p class="file-note">支援 TXT／Markdown；PDF 會先保留為待解析檔案。</p><label class="search-label" for="adminSearch">搜尋文章<input id="adminSearch" type="search" placeholder="標題、分類或狀態"></label><div id="articleList" class="article-list"></div></aside>
+    <section class="editor-panel"><div class="editor-head"><div><small id="editorEyebrow">ARTICLE</small><h2 id="editorTitle">選擇一篇文章</h2></div><span id="saveMessage" class="save-message" aria-live="polite"></span></div><form id="articleForm" hidden><div class="form-grid"><label>文章標題<input name="title" required></label><label>副標題<input name="subtitle"></label><label>分類<input name="category"></label><label>閱讀時間（分鐘）<input name="reading_minutes" type="number" min="1"></label><label class="wide">摘要<textarea name="summary" rows="3"></textarea></label><label class="wide">文章正文<textarea name="body_markdown" rows="12" placeholder="可在這裡補充或整理文章內容"></textarea></label><label>狀態<select name="status"><option value="draft">草稿</option><option value="published">已發布</option><option value="archived">已封存</option></select></label><label>網址識別字<input name="slug" placeholder="例如 coaching-dialogue"></label></div><div class="editor-actions"><button type="submit" class="button primary">保存變更</button><button type="button" id="generateLearningPage" class="button ai-button">AI 生成學習頁</button><button type="button" id="publishArticle" class="button">發布文章</button><button type="button" id="archiveArticle" class="button quiet">封存文章</button><button type="button" id="previewArticle" class="button quiet">預覽公開頁</button><button type="button" id="deleteDraft" class="button danger" hidden>刪除草稿</button></div></form><div id="emptyEditor" class="empty-editor"><span>✦</span><p>從左側選擇一篇文章，開始整理標題、摘要與發布狀態。</p></div></section>
+    </section>
+  </main>
+  <script>window.ADMIN_ARTICLES=__ADMIN_ARTICLES__;window.ADMIN_SITE_SETTINGS={site_name:'精萃領導™學習中心',logo_text:'LE'};</script>
+  <script src="assets/admin.js?v=20260901-image-refresh"></script>
+</body>
+</html>

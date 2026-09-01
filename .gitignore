@@ -5,3 +5,8 @@ __pycache__/
 
 # Local Netlify folder
 .netlify
+
+# Local API and voice configuration
+.env
+.env.*
+!.env.example
