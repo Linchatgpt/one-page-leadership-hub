@@ -1,2 +1,15 @@
 import { getStore } from '@netlify/blobs';
-export default async()=>{const s=getStore({name:'leadership-articles',consistency:'strong'});const items=await s.list();const articles=[];for(const blob of items.blobs||[]){const a=await s.get(blob.key,{type:'json'});if(a?.status==='published'&&a.title&&a.body_markdown)articles.push({id:a.id,title:a.title,subtitle:a.subtitle,summary:a.summary,category:a.category,reading_minutes:a.reading_minutes,hero_image:a.hero_image});}return new Response(JSON.stringify(articles),{headers:{'content-type':'application/json; charset=utf-8','cache-control':'no-store'}})};
+
+export default async function () {
+  const store = getStore({ name: 'leadership-articles', consistency: 'strong' });
+  const items = await store.list();
+  const articles = [];
+  for (const blob of items.blobs || []) {
+    const article = await store.get(blob.key, { type: 'json' });
+    if (article?.status === 'published' && article.title && article.body_markdown) articles.push(article);
+  }
+  articles.sort((a, b) => new Date(a.published_at || 0) - new Date(b.published_at || 0));
+  const highest = articles.reduce((max, article) => Math.max(max, Number(String(article.id).match(/article_(\d+)$/)?.[1] || 0)), 17);
+  const result = articles.map((article, index) => ({ id: article.id, number: Number(String(article.id).match(/article_(\d+)$/)?.[1] || highest + index - (articles.length - 1)), title: article.title, subtitle: article.subtitle, summary: article.summary, category: article.category, reading_minutes: article.reading_minutes, hero_image: article.hero_image, audio_data: article.audio_data || '' }));
+  return new Response(JSON.stringify(result), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
+}
