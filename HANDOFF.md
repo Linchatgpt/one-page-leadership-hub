@@ -8,6 +8,8 @@
 
 目前固定 Voice ID 已儲存在本專案本機 `.env` 的 `MINIMAX_VOICE_ID`；MiniMax API Key 僅從本機秘密設定讀取，不放入本專案或公開檔案。
 
+2026-09-06：正式網站目錄與作者工作台已同步；文章 18、19、20 已依使用者確認永久刪除，工作台也會隱藏這三筆舊資料。目錄維持每頁四篇、最新文章優先、編號不因封存或刪除而重排。
+
 本專案是由文章設定檔自動產生的 One-Page Leadership Hub。來源資料位於 `content/articles/article_XX/`，不要只直接修改生成 HTML。
 
 作者工作台入口為 `http://localhost:5200/author-admin.html`，由本專案的 `scripts/author_server.py` 提供；它只使用本專案的 localStorage 與 `.env`，不連接 One-Page Personal hub。
