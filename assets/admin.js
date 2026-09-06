@@ -1,9 +1,10 @@
 (function(){
+  const removedArticleIds=new Set(['draft_1788277967127','draft_1788278119851','draft_1788501382767']);
   const seed=Array.isArray(window.ADMIN_ARTICLES)?window.ADMIN_ARTICLES:[];
   const key='leadershipHub:articleAdmin:records';
   const stored=JSON.parse(localStorage.getItem(key)||'null');
   let articles=stored?seed.map((base)=>{const saved=stored.find((item)=>item.id===base.id)||{};return {...base,...saved,status:base.status==='published'?'published':(saved.status||base.status||'published')};}).concat(stored.filter((saved)=>!seed.some((base)=>base.id===saved.id)&&!seed.some((base)=>base.title&&base.title===saved.title))):seed.map((x)=>({...x,status:x.status||'published'}));
-  articles=Array.from(new Map(articles.map((article)=>[article.id,article])).values());
+  articles=Array.from(new Map(articles.map((article)=>[article.id,article])).values()).filter((article)=>!removedArticleIds.has(article.id));
   if(stored&&stored.length!==articles.length)localStorage.setItem(key,JSON.stringify(articles));
   let selectedId=null;
   const list=document.getElementById('articleList'), search=document.getElementById('adminSearch'), form=document.getElementById('articleForm'), empty=document.getElementById('emptyEditor'), title=document.getElementById('editorTitle'), eyebrow=document.getElementById('editorEyebrow'), message=document.getElementById('saveMessage'), deleteDraft=document.getElementById('deleteDraft');
