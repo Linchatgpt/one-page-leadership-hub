@@ -2,7 +2,7 @@
 
 ## 2026-08-28｜ARTICLE 15 音檔
 
-- ARTICLE 15 初版音檔曾誤用 Mac 內建語音；目前已依專案固定 MiniMax Voice ID `moss_audio_39eb1dad-2537-11f1-9471-ba789c2c93f8` 重製並替換，重新建置、PWA、JavaScript 與本機 HTTP 檢查通過。
+- ARTICLE 15 初版音檔曾誤用 Mac 內建語音；目前已依專案固定 MiniMax Voice ID 重製並替換，重新建置、PWA、JavaScript 與本機 HTTP 檢查通過。
 - 依固定摘要格式重新整理三焦點口述稿，並再次以本專案 `.env` 的 `MINIMAX_VOICE_ID` 產生 MP3；本機文章頁 HTTP 200。
 
 ## 2026-08-08

@@ -6,7 +6,7 @@
 
 本專案的摘要音檔 Voice ID 固定，新增或重製音檔時必須沿用既定 Voice ID；不得使用 Mac 內建 `say` 或其他替代聲音，以維持全站聲音一致性。
 
-目前固定 Voice ID 為 `moss_audio_39eb1dad-2537-11f1-9471-ba789c2c93f8`，已儲存在本專案本機 `.env` 的 `MINIMAX_VOICE_ID`；MiniMax API Key 僅從本機秘密設定讀取，不放入本專案或公開檔案。
+目前固定 Voice ID 已儲存在本專案本機 `.env` 的 `MINIMAX_VOICE_ID`；MiniMax API Key 僅從本機秘密設定讀取，不放入本專案或公開檔案。
 
 本專案是由文章設定檔自動產生的 One-Page Leadership Hub。來源資料位於 `content/articles/article_XX/`，不要只直接修改生成 HTML。
 
