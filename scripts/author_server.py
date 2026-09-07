@@ -225,15 +225,7 @@ class Handler(SimpleHTTPRequestHandler):
                             return
                     except (OSError, json.JSONDecodeError):
                         pass
-            image_name = 'article-15-questioning-leadership-illustration.png'
-            image_path = ROOT / 'assets' / image_name
-            if image_path.is_file():
-                self.send_json(200, {'hero_image': f'assets/{image_name}', 'hero_image_alt': title})
-                return
-            esc = lambda value: html.escape(value, quote=True)
-            svg = f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675"><rect width="1200" height="675" fill="#f4f0e7"/><path d="M0 520C260 390 460 610 720 470S1030 300 1200 390V675H0Z" fill="#17352e"/><circle cx="1010" cy="145" r="92" fill="#c28b3c" opacity=".88"/><text x="90" y="120" fill="#c28b3c" font-family="Georgia,serif" font-size="24" letter-spacing="5">LEADERSHIP LEARNING</text><text x="90" y="270" fill="#17352e" font-family="Georgia,serif" font-size="58" font-weight="700">{esc(title)}</text><text x="90" y="320" fill="#456057" font-family="system-ui,sans-serif" font-size="24">{esc(category)}</text><text x="90" y="595" fill="#f4f0e7" font-family="system-ui,sans-serif" font-size="22" letter-spacing="3">精萃領導™學習中心</text></svg>'''
-            image_path.write_text(svg, encoding='utf-8')
-            self.send_json(200, {'hero_image': f'assets/{image_name}', 'hero_image_alt': title})
+            raise ValueError('這篇文章尚未有專屬 PNG 主圖，不能套用其他文章圖片。')
         except Exception as exc:
             self.send_json(500, {'error': str(exc)})
 
