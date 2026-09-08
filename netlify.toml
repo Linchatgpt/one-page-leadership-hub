@@ -31,6 +31,11 @@
   status = 200
 
 [[redirects]]
+  from = "/api/article-image"
+  to = "/.netlify/functions/article-image"
+  status = 200
+
+[[redirects]]
   from = "/api/render-preview"
   to = "/.netlify/functions/render-preview"
   status = 200

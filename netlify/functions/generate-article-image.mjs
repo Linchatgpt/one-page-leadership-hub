@@ -1,3 +1,4 @@
+import { getStore } from '@netlify/blobs';
 const json = (status, body) => new Response(JSON.stringify(body), { status, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
 export default async (request) => {
   if (request.method !== 'POST') return json(405, { error: '只接受 POST 請求' });
@@ -13,6 +14,9 @@ export default async (request) => {
     if (!response.ok) return json(response.status, { error: data.error?.message || '主圖生成失敗' });
     const base64 = data.data?.[0]?.b64_json;
     if (!base64) return json(502, { error: '圖片服務沒有回傳 PNG' });
-    return json(200, { hero_image: `data:image/png;base64,${base64}`, hero_image_alt: title });
+    const id = String(payload.id || `draft_${Date.now()}`).replace(/[^a-zA-Z0-9_-]/g, '-');
+    const keyName = `${id}-${Date.now()}.png`;
+    await getStore({ name: 'leadership-article-images', consistency: 'strong' }).set(keyName, Buffer.from(base64, 'base64'), { metadata: { contentType: 'image/png' } });
+    return json(200, { hero_image: `/api/article-image?key=${encodeURIComponent(keyName)}`, hero_image_alt: title });
   } catch (error) { return json(500, { error: error.message || '主圖生成失敗' }); }
 };
