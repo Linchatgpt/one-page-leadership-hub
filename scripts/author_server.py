@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import base64, html, json, os, re, ssl, subprocess, tempfile, urllib.request
+import base64, html, json, os, re, ssl, subprocess, tempfile, urllib.request, certifi
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
@@ -45,6 +45,14 @@ def load_env():
             os.environ.setdefault(key.strip(), value.strip().strip('"').strip("'"))
 
 class Handler(SimpleHTTPRequestHandler):
+    def end_headers(self):
+        path = self.path.split('?', 1)[0]
+        if path in ('/author-admin.html', '/preview.html'):
+            self.send_header('Cache-Control', 'no-store, no-cache, must-revalidate')
+            self.send_header('Pragma', 'no-cache')
+            self.send_header('Expires', '0')
+        super().end_headers()
+
     def do_GET(self):
         if self.path == '/api/health':
             self.send_json(200, {'ok': True, 'project': 'one-page-leadership-hub'})
@@ -162,7 +170,15 @@ class Handler(SimpleHTTPRequestHandler):
             article = json.loads(self.rfile.read(length) or '{}')
             body = str(article.pop('body_markdown', '')).strip()
             if not article.get('title') or not body: raise ValueError('文章標題與正文不可為空')
-            if not str(article.get('hero_image', '')).strip(): raise ValueError('尚未設定文章主圖，請先設定主圖再發布')
+            image_request = urllib.request.Request(
+                f"http://127.0.0.1:{os.environ.get('PORT', '5200')}/api/generate-article-image",
+                data=json.dumps(article).encode(), headers={'content-type': 'application/json'})
+            with urllib.request.urlopen(image_request, timeout=240) as image_response:
+                image_result = json.loads(image_response.read().decode())
+            if not image_result.get('hero_image'):
+                raise ValueError(image_result.get('error') or '發布前主圖生成失敗')
+            article['hero_image'] = image_result['hero_image']
+            article['hero_image_alt'] = image_result.get('hero_image_alt') or article.get('title', '')
             article_id = str(article.get('id', ''))
             if not re.fullmatch(r'article_\d+', article_id):
                 existing_id = ''
@@ -205,27 +221,33 @@ class Handler(SimpleHTTPRequestHandler):
             title = str(article.get('title', '未命名文章')).strip()[:24]
             category = str(article.get('category', '領導學習')).strip()[:24]
             article_id = re.sub(r'[^a-zA-Z0-9_-]+', '-', str(article.get('id', 'draft'))).strip('-') or 'draft'
-            existing_style_images = {
-                'article_16': ('assets/article-16-coaching-judgment-illustration.png', '主管在團隊對話中先判斷情境，再選擇合適的教練介入方式'),
-                'article_17': ('assets/article-17-learning-leadership-illustration.png', '主管透過提問與傾聽，帶領團隊從直接給答案走向共同學習'),
-            }
-            if article_id in existing_style_images:
-                image_name, image_alt = existing_style_images[article_id]
-                if (ROOT / image_name).is_file():
-                    self.send_json(200, {'hero_image': image_name, 'hero_image_alt': image_alt})
-                    return
-            if re.fullmatch(r'article_\d+', article_id):
-                source_file = ROOT / 'content' / 'articles' / article_id / 'article.json'
-                if source_file.is_file():
-                    try:
-                        source = json.loads(source_file.read_text())
-                        source_image = str(source.get('hero_image', ''))
-                        if source_image.lower().endswith(('.png', '.jpg', '.jpeg', '.webp')) and (ROOT / source_image).is_file():
-                            self.send_json(200, {'hero_image': source_image, 'hero_image_alt': str(source.get('hero_image_alt') or title)})
-                            return
-                    except (OSError, json.JSONDecodeError):
-                        pass
-            raise ValueError('這篇文章尚未有專屬 PNG 主圖，不能套用其他文章圖片。')
+            key = os.environ.get('AI_API_KEY', '')
+            if not key:
+                raise ValueError('本機尚未設定 AI_API_KEY，無法生成主圖。')
+            variants = ['a small cross-functional group around a table, viewed from a slightly elevated angle', 'a one-to-one coaching conversation with two people in profile, with observers in the background', 'a standing workshop with people arranging cards and diagrams on a wall', 'a quiet reflective scene with one facilitator and several colleagues taking notes', 'a broad team discussion in a bright room, with the main speaker off-center', 'a close conversational moment between two colleagues, with layered group activity behind them']
+            seed = sum(ord(char) for char in title) + len(article_id)
+            scene_variation = variants[seed % len(variants)]
+            prompt = (f'Create a new wide banner editorial illustration for a Traditional Chinese leadership learning website. Subject: {title}. Category: {category}. Scene variation: {scene_variation}. '
+                      'The final artwork must be a long horizontal rectangular page-header composition, approximately 2:1, with important people and objects kept inside the central safe area so the image can be displayed as a consistent wide banner without losing the subject. '
+                      'Match the established article-15-to-17 visual language: hand-painted watercolor and gouache editorial illustration, warm textured ivory paper, muted olive and deep forest green, ochre gold and restrained terracotta accents, natural expressive people in a real workplace conversation or collaborative learning scene, thoughtful human-centered leadership atmosphere, visible paper grain and soft brush edges, balanced wide landscape composition with layered depth, premium quiet magazine style. '
+                      'Keep the same visual identity but deliberately vary the people, age, clothing, camera angle, gestures, room layout, plants, window or mountain elements, and table objects from other articles. Create a new scene specifically for this article. No text, no letters, no numbers, no logos, no watermark, no gradients, no glossy 3D, no photorealism, no generic corporate stock-photo look.')
+            endpoint = os.environ.get('AI_IMAGE_API_ENDPOINT', 'https://api.openai.com/v1/images/generations')
+            request = urllib.request.Request(endpoint, data=json.dumps({
+                'model': os.environ.get('AI_IMAGE_MODEL', 'gpt-image-1'), 'prompt': prompt,
+                'size': '1536x1024', 'quality': 'medium', 'output_format': 'png'
+            }).encode(), headers={'content-type': 'application/json', 'authorization': f'Bearer {key}'})
+            tls_context = ssl.create_default_context(cafile=certifi.where())
+            with urllib.request.urlopen(request, timeout=180, context=tls_context) as response:
+                data = json.loads(response.read().decode())
+            encoded = data.get('data', [{}])[0].get('b64_json')
+            if not encoded:
+                raise ValueError('圖片服務沒有回傳 PNG。')
+            number = re.search(r'(\d+)$', article_id)
+            suffix = re.sub(r'[^a-z0-9]+', '-', title.lower()).strip('-')[:48] or 'leadership-illustration'
+            image_name = f"assets/article-{int(number.group(1)):02d}-{suffix}-illustration.png" if number else f'assets/{article_id}-{suffix}-illustration.png'
+            image_path = ROOT / image_name
+            image_path.write_bytes(base64.b64decode(encoded))
+            self.send_json(200, {'hero_image': image_name, 'hero_image_alt': title})
         except Exception as exc:
             self.send_json(500, {'error': str(exc)})
 

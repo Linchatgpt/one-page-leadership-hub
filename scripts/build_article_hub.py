@@ -14,6 +14,16 @@ def inject_pwa(document):
         return document
     return document.replace('</head>', PWA_HEAD+'</head>').replace('</body>', PWA_SCRIPT+'</body>')
 
+def video_html(url):
+    url = str(url or '').strip()
+    if not url:
+        return ''
+    match = re.search(r'(?:youtube\.com/watch\?[^\s]*v=|youtu\.be/)([A-Za-z0-9_-]{6,})', url)
+    if match:
+        video_id = html.escape(match.group(1), quote=True)
+        return f'<aside class="external-video"><small class="kicker">延伸影音</small><div class="external-video-frame"><iframe title="延伸影音播放器" src="https://www.youtube.com/embed/{video_id}" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div><a href="{html.escape(url, quote=True)}" target="_blank" rel="noopener">在 YouTube 觀看影片 →</a></aside>'
+    return f'<aside class="external-video"><small class="kicker">延伸影音</small><a href="{html.escape(url, quote=True)}" target="_blank" rel="noopener">在新分頁開啟影音 →</a></aside>'
+
 def md_to_html(text):
     out=[]; para=[]; table_rows=[]; in_ul=False; summary_open=False; seen_h1=False
     def flush():
@@ -159,6 +169,7 @@ def build_article(d, md):
         if marker in article_html and index < len(tool_parts):
             article_html=article_html.replace(marker, tool_parts[index]+'</aside>')
     article_html=re.sub(r'<!--\s*TOOL_[123]\s*-->', '', article_html, flags=re.I)
+    article_html += video_html(d.get('video_url'))
     image=d.get('hero_image','')
     image_html=f'<figure class="article-hero-visual"><img src="{html.escape(image)}" alt="{html.escape(d.get("hero_image_alt","文章主題插圖"))}"></figure>' if image else ''
     number=d['id'].split('_')[-1]; page=f'Article_Learning_Article{number}.html'; canonical=SITE_URL+page
