@@ -13,13 +13,17 @@ async function chat(system, user, max_tokens = 3000, asJson = true, modelOverrid
   const response = await fetch(process.env.AI_API_ENDPOINT || 'https://api.openai.com/v1/chat/completions', { method: 'POST', headers: { 'content-type': 'application/json', authorization: `Bearer ${key}` }, body: JSON.stringify(request) });
   const data = await response.json();
   if (!response.ok) throw new Error(data.error?.message || 'AI 請求失敗');
-  const content = data.choices?.[0]?.message?.content || '';
-  return asJson ? JSON.parse(content || '{}') : content;
+  const choice = data.choices?.[0];
+  const content = choice?.message?.content || '';
+  if (asJson && choice?.finish_reason === 'length') throw new Error('AI 回傳內容過長而未完成，請再次按生成；系統已保留原草稿。');
+  if (!asJson) return content;
+  try { return JSON.parse(content || '{}'); }
+  catch (error) { throw new Error(error instanceof SyntaxError ? 'AI 回傳的文章資料不完整，請再次按生成；系統已保留原草稿。' : error.message); }
 }
 
 async function generateArticle(payload) {
   const system = '你是繁體中文管理學習內容編輯。只回傳 JSON，不要 Markdown code fence。請產生 title（12個中文字以內）、subtitle、category、reading_minutes（整數）、summary（首頁方格用，1至2句）、start_prompt、orientation（4個字串）、quick_scan（3個物件）、body_markdown、case、questions（4個物件）、focus_tips、tools（1至2個物件）。正文使用 Markdown ## 小標題與標準表格；工具標記 <!-- TOOL_1 -->、<!-- TOOL_2 --> 必須放在最相關正文段落之後且不可集中在文末。不要輸出 JSON 物件到正文。';
-  const result = await chat(system, JSON.stringify({ title: clean(payload.title || ''), category: clean(payload.category || ''), source_text: clean(String(payload.source_text || '').slice(0, 7000)) }), 2500, true, 'gpt-5.4-mini');
+  const result = await chat(system, JSON.stringify({ title: clean(payload.title || ''), category: clean(payload.category || ''), source_text: clean(String(payload.source_text || '').slice(0, 6000)) }), 6000, true, 'gpt-5.4-mini');
   result.title = String(result.title || '').replace(/\s+/g, '').split(/[：:，,。！？!?]/, 1)[0].slice(0, 12);
   result.body_markdown = String(result.body_markdown || '').replace(/^\s*>\s?/gm, '').replace(/\n{3,}/g, '\n\n');
   return result;
