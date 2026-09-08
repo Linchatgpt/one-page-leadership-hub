@@ -31,6 +31,22 @@ class AdminCachePolicyTest(unittest.TestCase):
         built = (ROOT / 'Article_Learning_Article18.html').read_text()
         self.assertIn('youtube.com/embed/Pq-JIYXm3Pc', built)
 
+    def test_directory_uses_article_id_as_unique_key(self):
+        builder = (ROOT / 'scripts' / 'build_article_hub.py').read_text()
+        published = (ROOT / 'assets' / 'published.js').read_text()
+        self.assertIn('data-article-id=', builder)
+        self.assertIn("querySelector('[data-article-id=", published)
+
+    def test_workbench_cloud_article_overrides_embedded_copy(self):
+        admin = (ROOT / 'assets' / 'admin.js').read_text()
+        self.assertIn('Object.assign(existing,item)', admin)
+
+    def test_saving_published_article_updates_same_cloud_record(self):
+        admin = (ROOT / 'assets' / 'admin.js').read_text()
+        api = (ROOT / 'netlify' / 'functions' / 'api.mjs').read_text()
+        self.assertIn("fetch('/api/save-published'", admin)
+        self.assertIn("path === '/save-published'", api)
+
 
 if __name__ == '__main__':
     unittest.main()

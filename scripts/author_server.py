@@ -66,6 +66,9 @@ class Handler(SimpleHTTPRequestHandler):
         if self.path == '/api/publish-article':
             self.publish_article()
             return
+        if self.path == '/api/save-published':
+            self.save_published_article()
+            return
         if self.path == '/api/generate-audio-script':
             self.generate_audio_script()
             return
@@ -209,6 +212,34 @@ class Handler(SimpleHTTPRequestHandler):
             (folder/'article.md').write_text(body+'\n')
             subprocess.run(['python3', str(ROOT/'scripts/build_article_hub.py')], cwd=ROOT, check=True, capture_output=True, text=True)
             self.send_json(200, {'ok': True, 'id': article_id, 'page': f'Article_Learning_Article{article_id.split("_")[-1]}.html'})
+        except subprocess.CalledProcessError as exc:
+            self.send_json(500, {'error': (exc.stderr or exc.stdout or '文章建置失敗').strip()})
+        except Exception as exc:
+            self.send_json(500, {'error': str(exc)})
+
+    def save_published_article(self):
+        try:
+            length = int(self.headers.get('Content-Length', '0'))
+            article = json.loads(self.rfile.read(length) or '{}')
+            article_id = str(article.get('id', ''))
+            body = str(article.pop('body_markdown', '')).strip()
+            if not re.fullmatch(r'article_\d+', article_id):
+                raise ValueError('已發布文章必須保留原文章 ID')
+            if not article.get('title') or not body:
+                raise ValueError('文章標題與正文不可為空')
+            folder = ROOT/'content/articles'/article_id
+            current = json.loads((folder/'article.json').read_text()) if (folder/'article.json').is_file() else {}
+            article = {**current, **article, 'id': article_id, 'status': 'published'}
+            embedded_audio = article.pop('audio_data', '')
+            audio_path = ROOT/'audio_summaries'/f'article_{article_id.split("_")[-1]}_summary.mp3'
+            if isinstance(embedded_audio, str) and embedded_audio.startswith('data:audio/mpeg;base64,'):
+                audio_path.write_bytes(base64.b64decode(embedded_audio.split(',', 1)[1]))
+                article['audio'] = True
+            folder.mkdir(parents=True, exist_ok=True)
+            (folder/'article.json').write_text(json.dumps(article, ensure_ascii=False, indent=2)+'\n')
+            (folder/'article.md').write_text(body+'\n')
+            subprocess.run(['python3', str(ROOT/'scripts/build_article_hub.py')], cwd=ROOT, check=True, capture_output=True, text=True)
+            self.send_json(200, {'ok': True, 'id': article_id})
         except subprocess.CalledProcessError as exc:
             self.send_json(500, {'error': (exc.stderr or exc.stdout or '文章建置失敗').strip()})
         except Exception as exc:

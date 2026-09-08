@@ -221,7 +221,7 @@ def main():
             number=d["id"].split("_")[-1]
             search_terms=[d.get('title',''),d.get('subtitle',''),d.get('category',''),d.get('summary',''),d.get('primary_keyword',''),*d.get('related_keywords',[]),*d.get('likely_search_questions',[])]
             search_text=html.escape(' '.join(str(term) for term in search_terms if term), quote=True)
-            group_cards.append(f'<div class="map-card" data-search="{search_text}"><a class="map-card-link" href="{page}"><small>ARTICLE {number} · {html.escape(d["category"])} · {d["reading_minutes"]} MIN READ</small><h3>{html.escape(d["title"])}</h3><p>{html.escape(d["summary"])}</p><span>開始這篇學習 →</span></a>{audio_card_html(number,d.get("audio",True))}</div>')
+            group_cards.append(f'<div class="map-card" data-article-id="{html.escape(d["id"], quote=True)}" data-search="{search_text}"><a class="map-card-link" href="{page}"><small>ARTICLE {number} · {html.escape(d["category"])} · {d["reading_minutes"]} MIN READ</small><h3>{html.escape(d["title"])}</h3><p>{html.escape(d["summary"])}</p><span>開始這篇學習 →</span></a>{audio_card_html(number,d.get("audio",True))}</div>')
         card_groups.append('<div class="map-group'+(' is-active' if start==0 else '')+'" data-group="'+str(start//4)+'">'+''.join(group_cards)+'</div>')
     cards=''.join(card_groups)
     for folder in []:
@@ -243,7 +243,7 @@ def main():
     index=index.replace('<a href="https://leading4elite.com/about_wesley/" target="_blank" rel="noopener">林祖威教練</a></div>','<a href="https://leading4elite.com/about_wesley/" target="_blank" rel="noopener">林祖威教練</a><a href="mailto:wesley.lin@leading4elite.com">wesley.lin@leading4elite.com</a></div>')
     index=index.replace('mailto:wesley.lin@leading4elite.com','https://mail.google.com/mail/?view=cm&amp;fs=1&amp;to=wesley.lin%40leading4elite.com').replace('href="https://mail.google.com/mail/?view=cm&amp;fs=1&amp;to=wesley.lin%40leading4elite.com">','href="https://mail.google.com/mail/?view=cm&amp;fs=1&amp;to=wesley.lin%40leading4elite.com" target="_blank" rel="noopener">').replace('不保存網上副本）','不保存網上副本')
     index=index.replace('</div><img src="assets/line-qr.png"', '<a class="subscribe-link" href="'+SUBSCRIPTION_URL+'" target="_blank" rel="noopener">訂閱學習更新</a></div><img src="assets/line-qr.png"')
-    index=index.replace('</body>', '<script src="assets/published.js?v=20260906-order2"></script></body>')
+    index=index.replace('</body>', '<script src="assets/published.js?v=20260908-unique-published"></script></body>')
     (ROOT/'index.html').write_text(inject_pwa(index))
     admin_records=[]
     for folder in sorted(ARTICLES.iterdir(), reverse=True):
