@@ -37,6 +37,15 @@ class AdminCachePolicyTest(unittest.TestCase):
         self.assertIn('data-article-id=', builder)
         self.assertIn("querySelector('[data-article-id=", published)
 
+    def test_published_card_preserves_static_article_page(self):
+        published = (ROOT / 'assets' / 'published.js').read_text()
+        self.assertIn("article.page", published)
+        self.assertNotIn("href=\"/article?id=", published)
+
+    def test_directory_loads_static_link_fix_without_stale_cache(self):
+        directory = (ROOT / 'index.html').read_text()
+        self.assertIn('assets/published.js?v=20260908-static-article-links', directory)
+
     def test_workbench_cloud_article_overrides_embedded_copy(self):
         admin = (ROOT / 'assets' / 'admin.js').read_text()
         self.assertIn('Object.assign(existing,item)', admin)
