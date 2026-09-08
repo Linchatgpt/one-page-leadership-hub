@@ -32,7 +32,7 @@
 
 [[redirects]]
   from = "/api/list-drafts"
-  to = "/.netlify/functions/api?route=list-drafts"
+  to = "/.netlify/functions/list-drafts"
   status = 200
 
 [[redirects]]
