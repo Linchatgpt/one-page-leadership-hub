@@ -4,7 +4,7 @@
   const seed=Array.isArray(window.ADMIN_ARTICLES)?window.ADMIN_ARTICLES:[];
   const key='leadershipHub:articleAdmin:records';
   const stored=JSON.parse(localStorage.getItem(key)||'null');
-  let articles=stored?seed.map((base)=>{const saved=stored.find((item)=>item.id===base.id)||{};return {...base,...saved,status:base.status==='published'?'published':(saved.status||base.status||'published')};}).concat(stored.filter((saved)=>!seed.some((base)=>base.id===saved.id)&&!seed.some((base)=>base.title&&base.title===saved.title))):seed.map((x)=>({...x,status:x.status||'published'}));
+  let articles=stored?seed.map((base)=>{const saved=stored.find((item)=>item.id===base.id)||{};return {...base,...saved,status:saved.status||base.status||'published'};}).concat(stored.filter((saved)=>!seed.some((base)=>base.id===saved.id)&&!seed.some((base)=>base.title&&base.title===saved.title))):seed.map((x)=>({...x,status:x.status||'published'}));
   articles=Array.from(new Map(articles.map((article)=>[article.id,article])).values()).filter((article)=>!removedArticleIds.has(article.id));
   if(stored&&stored.length!==articles.length)localStorage.setItem(key,JSON.stringify(articles));
   let selectedId=null;
