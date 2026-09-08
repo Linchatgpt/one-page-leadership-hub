@@ -54,7 +54,7 @@ export default async (event, context, forcedPath = '') => {
   try {
     const requestPath = forcedPath || (event.path || new URL(event.url || event.rawUrl || 'http://localhost/.netlify/functions/api').pathname);
     const path = event.queryStringParameters?.route ? `/${event.queryStringParameters.route.replace(/^\//, '')}` : (requestPath.replace(/^.*\/\.netlify\/functions\/api/, '').replace(/^\/api/, '') || '/');
-    const method = event.method || event.httpMethod || event.requestContext?.http?.method || event.request?.method || (path === '/health' ? 'GET' : 'POST');
+    const method = event.method || event.httpMethod || event.requestContext?.http?.method || event.request?.method || (path === '/health' || path === '/list-drafts' ? 'GET' : 'POST');
     const payload = method === 'GET' ? {} : await bodyOf(event);
     if (method === 'GET' && path === '/health') return json(200, { ok: true, project: 'one-page-leadership-hub', runtime: 'netlify-functions' });
     if (method !== 'POST') return json(405, { error: '只接受 POST 請求' });
