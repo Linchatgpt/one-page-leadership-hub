@@ -26,4 +26,6 @@ python3 scripts/author_server.py
 ```
 
 開啟 [http://localhost:5200/author-admin.html](http://localhost:5200/author-admin.html)。文章草稿先保存在本機瀏覽器；確認後可匯出備份，再由建置器生成正式文章頁。AI 功能使用本專案 `.env` 的 API 設定，與其他專案分開。
+
+線上工作台為 [https://one-page-leadership-hub.netlify.app/author-admin.html](https://one-page-leadership-hub.netlify.app/author-admin.html)。草稿與已發布文章資料會同步雲端；已發布文章修改外部影音網址後，正式文章頁重新整理即可取得最新版。文章主圖仍由 Codex 製作並納入專案後部署。
 - `只檢查，不發布`：只進行本地與 Chrome 驗證

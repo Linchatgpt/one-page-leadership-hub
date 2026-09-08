@@ -1,5 +1,15 @@
 # Handoff
 
+## 2026-09-08 定版基準
+
+- 使用者確認目前版本為定版，程式內容基準為 `c0370e0`，完整定版以標籤 `leadership-hub-final-2026-09-08` 為準。
+- GitHub `main` 與 Netlify production 已同步；正式網站為 https://one-page-leadership-hub.netlify.app。
+- ARTICLE 17 主圖為 `assets/article-17-from-answers-to-learning-illustration-v2.png`，採 ARTICLE 15／16 的細緻水彩墨線風格。
+- 目錄中的已發布文章固定連到正式 HTML；雲端資料只更新文章卡內容。
+- 已發布文章的外部影音網址由工作台同步至雲端，正式文章頁透過 `assets/article-live-video.js` 套用最新版網址。
+- 後續所有修改先由 `main` 建立 `codex/` 分支，驗證後才合併與部署。
+- 根目錄現有數張未納管的舊測試圖片，不屬於本次定版，不要自行加入或刪除。
+
 ## 首頁音檔
 
 首頁顯示「播放摘要」文字與原生 audio controls；播放器位於文章連結之外，手機播放不會跳轉，同頁開始新摘要時會自動停止上一個摘要。音檔來源為 `audio_summaries/article_XX_summary.mp3`，由 `scripts/build_article_hub.py` 產生。
