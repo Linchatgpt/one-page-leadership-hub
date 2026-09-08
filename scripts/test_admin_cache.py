@@ -56,6 +56,23 @@ class AdminCachePolicyTest(unittest.TestCase):
         self.assertIn("fetch('/api/save-published'", admin)
         self.assertIn("path === '/save-published'", api)
 
+    def test_published_article_autosave_uses_cloud_sync(self):
+        admin = (ROOT / 'assets' / 'admin.js').read_text()
+        self.assertIn('function syncArticle(a)', admin)
+        self.assertGreaterEqual(admin.count('syncArticle(a)'), 3)
+
+    def test_workbench_loads_video_sync_fix_without_stale_cache(self):
+        workbench = (ROOT / 'author-admin.html').read_text()
+        self.assertIn('assets/admin.js?v=20260908-published-video-sync', workbench)
+
+    def test_article_page_refreshes_external_video_from_cloud(self):
+        article_script = ''.join(path.read_text() for path in [
+            ROOT / 'assets' / 'article-learning.js',
+            ROOT / 'assets' / 'article-live-video.js',
+        ] if path.exists())
+        self.assertIn("fetch('/api/list-published'", article_script)
+        self.assertIn('syncExternalVideo', article_script)
+
 
 if __name__ == '__main__':
     unittest.main()

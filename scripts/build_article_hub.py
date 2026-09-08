@@ -179,6 +179,7 @@ def build_article(d, md):
     t=t.replace('<section id="s1">','{{ARTICLE_IMAGE}}<section id="s1">')
     for k,v in replacements.items(): t=t.replace('{{'+k+'}}',v)
     t=t.replace('href="assets/article-learning.css"','href="assets/article-learning.css?v=20260831-footer7"')
+    t=t.replace('<script src="assets/article-learning.js"></script>', '<script src="assets/article-learning.js"></script><script src="assets/article-live-video.js?v=20260908-live-video"></script>')
     t=t.replace('1:1','1 on 1').replace('1：1','1 on 1')
     t=t.replace('先讀懂，再帶回現場','實用概念').replace('把觀點帶回工作現場','帶回現場').replace('整理一個可觀察的焦點','整理焦點').replace('把觀察留下來','留下觀察').replace('只承諾一個小型試做','我的實踐')
     t=t.replace('<div class="assess">','<details class="self-review"><summary><span><small>SELF REVIEW</small><strong>自我整理（4題）</strong></span><b>點擊展開／收起</b></summary><div class="self-review-body"><div class="assess">').replace('<p id="assessmentMessage" class="assessment-message" aria-live="polite"></p><div id="assessmentResult" class="result"></div></section>','<p id="assessmentMessage" class="assessment-message" aria-live="polite"></p><div id="assessmentResult" class="result"></div></div></details></section>')
@@ -243,7 +244,7 @@ def main():
     index=index.replace('<a href="https://leading4elite.com/about_wesley/" target="_blank" rel="noopener">林祖威教練</a></div>','<a href="https://leading4elite.com/about_wesley/" target="_blank" rel="noopener">林祖威教練</a><a href="mailto:wesley.lin@leading4elite.com">wesley.lin@leading4elite.com</a></div>')
     index=index.replace('mailto:wesley.lin@leading4elite.com','https://mail.google.com/mail/?view=cm&amp;fs=1&amp;to=wesley.lin%40leading4elite.com').replace('href="https://mail.google.com/mail/?view=cm&amp;fs=1&amp;to=wesley.lin%40leading4elite.com">','href="https://mail.google.com/mail/?view=cm&amp;fs=1&amp;to=wesley.lin%40leading4elite.com" target="_blank" rel="noopener">').replace('不保存網上副本）','不保存網上副本')
     index=index.replace('</div><img src="assets/line-qr.png"', '<a class="subscribe-link" href="'+SUBSCRIPTION_URL+'" target="_blank" rel="noopener">訂閱學習更新</a></div><img src="assets/line-qr.png"')
-    index=index.replace('</body>', '<script src="assets/published.js?v=20260908-unique-published"></script></body>')
+    index=index.replace('</body>', '<script src="assets/published.js?v=20260908-static-article-links"></script></body>')
     (ROOT/'index.html').write_text(inject_pwa(index))
     admin_records=[]
     for folder in sorted(ARTICLES.iterdir(), reverse=True):
@@ -255,5 +256,6 @@ def main():
         admin_records.append(data)
     admin=(ROOT/'author-admin.template.html').read_text()
     admin=admin.replace('__ADMIN_ARTICLES__',json.dumps(admin_records,ensure_ascii=False))
+    admin=admin.replace('assets/admin.js?v=20260908-unique-published','assets/admin.js?v=20260908-published-video-sync')
     (ROOT/'author-admin.html').write_text(admin)
 if __name__=='__main__': main()
