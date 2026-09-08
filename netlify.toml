@@ -26,6 +26,21 @@
   status = 200
 
 [[redirects]]
+  from = "/api/save-draft"
+  to = "/.netlify/functions/api?route=save-draft"
+  status = 200
+
+[[redirects]]
+  from = "/api/list-drafts"
+  to = "/.netlify/functions/api?route=list-drafts"
+  status = 200
+
+[[redirects]]
+  from = "/api/delete-draft"
+  to = "/.netlify/functions/api?route=delete-draft"
+  status = 200
+
+[[redirects]]
   from = "/api/generate-article-image"
   to = "/.netlify/functions/generate-article-image"
   status = 200

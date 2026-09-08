@@ -61,7 +61,10 @@ export default async (event, context, forcedPath = '') => {
     if (path === '/generate-learning-page') return json(200, await generateArticle(payload));
     if (path === '/generate-audio-script') return json(200, await audioScript(payload));
     if (path === '/generate-summary-audio') return json(200, await summaryAudio(payload));
-    if (path === '/publish-article') { const id = String(payload.id || `article_${Date.now()}`).replace(/[^a-zA-Z0-9_-]/g, '-'); await store().setJSON(id, { ...payload, id, status: 'published', published_at: new Date().toISOString() }); return json(200, { ok: true, id, page: `Article_Learning_${id.replace('article_', 'Article')}.html` }); }
+    if (path === '/save-draft') { const id = String(payload.id || `draft_${Date.now()}`).replace(/[^a-zA-Z0-9_-]/g, '-'); await getStore({ name: 'leadership-article-drafts', consistency: 'strong' }).setJSON(id, { ...payload, id, status: 'draft', updated_at: new Date().toISOString() }); return json(200, { ok: true, id }); }
+    if (path === '/list-drafts') { const { blobs } = await getStore({ name: 'leadership-article-drafts', consistency: 'strong' }).list(); const drafts = []; for (const blob of blobs) { const item = await getStore({ name: 'leadership-article-drafts', consistency: 'strong' }).get(blob.key, { type: 'json' }); if (item) drafts.push(item); } return json(200, drafts); }
+    if (path === '/delete-draft') { const id = String(payload.id || ''); if (!id) return json(400, { error: '缺少草稿 ID' }); await getStore({ name: 'leadership-article-drafts', consistency: 'strong' }).delete(id); return json(200, { ok: true }); }
+    if (path === '/publish-article') { const id = String(payload.id || `article_${Date.now()}`).replace(/[^a-zA-Z0-9_-]/g, '-'); await store().setJSON(id, { ...payload, id, status: 'published', published_at: new Date().toISOString() }); await getStore({ name: 'leadership-article-drafts', consistency: 'strong' }).delete(String(payload.id || '')); return json(200, { ok: true, id, page: `Article_Learning_${id.replace('article_', 'Article')}.html` }); }
     return json(404, { error: '找不到 API 路徑', path });
   } catch (error) { return json(500, { error: error.message || '伺服器錯誤' }); }
 };
