@@ -1,5 +1,13 @@
 # Handoff
 
+## 2026-09-10：ARTICLE 19 舊草稿遷移
+
+- 「好教練不急著要答案」的正式來源已建立於 `content/articles/article_19/`。
+- 正式頁面為 `Article_Learning_Article19.html`，使用 `assets/article-19-coaching-reflection-illustration.png`。
+- 已還原舊雲端文章全文及 Markdown 表格；建置後表格會輸出為 `.reading-table` HTML。
+- `list-published` 會隱藏已遷移的舊 ID `draft_1788935242062`，避免目錄出現 ARTICLE 21 或重複文章。
+- 未來發布只能配發 `article_N`，N 取現有正式文章最大編號加一；不可從 draft ID 或建立時間推算。
+
 ## 2026-09-08 定版基準
 
 - 使用者確認目前版本為定版，程式內容基準為 `c0370e0`，完整定版以標籤 `leadership-hub-final-2026-09-08` 為準。
