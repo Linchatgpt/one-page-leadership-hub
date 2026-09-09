@@ -2,7 +2,7 @@
   const esc=(value)=>String(value||'').replace(/[&<>"']/g,(char)=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
   const renderCard=(card,article)=>{
     const number=String(article.number||String(article.id||'').match(/article_(\d+)$/)?.[1]||'').padStart(2,'0');
-    const audio=article.audio_data?'<div class="module-audio"><span class="audio-label">播放摘要</span><audio controls preload="none" src="'+esc(article.audio_data)+'"></audio></div>':'';
+    const audio=article.audio_data?'<div class="module-audio"><span class="audio-label">播放摘要</span><audio controls preload="none" src="/api/audio?id='+encodeURIComponent(article.id)+'"></audio></div>':'';
     const page=article.page?'/'+String(article.page).replace(/^\/+/, ''):'/article?id='+encodeURIComponent(article.id);
     card.dataset.articleId=article.id;
     card.innerHTML='<a class="map-card-link" href="'+esc(page)+'"><small>ARTICLE '+number+' · '+esc(article.category||'領導學習')+' · '+Number(article.reading_minutes||0)+' MIN READ</small><h3>'+esc(article.title||'未命名文章')+'</h3><p>'+esc(article.summary||'')+'</p><span>開始這篇學習 →</span></a>'+audio;

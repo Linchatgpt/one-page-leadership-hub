@@ -22,3 +22,10 @@
 - 公開目錄排除舊的 `draft_1788935242062` 紀錄，避免重複顯示。
 - 發布流程固定由現有最大正式編號配發下一號，不再依草稿時間或 draft ID 推算。
 - 已補上 ARTICLE 19 的固定 Voice ID 摘要音檔，目錄顯示「播放摘要」。
+
+## 動態發布模板（2026-09-10，分支 `codex/dynamic-publishing-template`）
+
+- 已移除待重建的舊 ARTICLE 19；ARTICLE 01–18 來源與生成頁雜湊驗證不變。
+- 預覽與雲端正式文章改用共用 `netlify/functions/lib/render-article.mjs`，涵蓋標準五段結構、表格、工具欄、自我整理、影音與播放摘要。
+- 新雲端文章從 ARTICLE 19 起編號；既有正式文章更新沿用原編號，避免目錄重複。
+- 目前只完成分支與本機測試，尚未合併 `main`、推送 GitHub 或部署 Netlify。

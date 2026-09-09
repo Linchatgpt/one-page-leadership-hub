@@ -4,6 +4,7 @@ const json = (statusCode, body) => new Response(JSON.stringify(body), { status: 
 const bodyOf = async (event) => { try { if (typeof event.json === 'function') return await event.json(); if (typeof Request !== 'undefined' && event instanceof Request) return await event.json(); return typeof event.body === 'string' ? JSON.parse(event.body || '{}') : (event.body || event.payload || {}); } catch { throw new Error('請求格式不是有效 JSON'); } };
 const clean = (value) => typeof value === 'string' ? value.replace(/[\*#＊＃]/g, '') : value;
 const store = () => getStore({ name: 'leadership-articles', consistency: 'strong' });
+const STATIC_ARTICLE_MAX = 18;
 
 async function chat(system, user, max_tokens = 3000, asJson = true, modelOverride = '') {
   const key = process.env.AI_API_KEY;
@@ -70,16 +71,18 @@ export default async (event, context, forcedPath = '') => {
       let id = requestedId;
       if (!/^article_\d+$/.test(id)) {
         const existing = await store().list();
-        let highest = 0;
+        let highest = STATIC_ARTICLE_MAX;
         for (const blob of existing.blobs || []) {
           const match = String(blob.key).match(/^article_(\d+)$/);
           if (match) highest = Math.max(highest, Number(match[1]));
         }
         id = `article_${highest + 1}`;
       }
-      await store().setJSON(id, { ...payload, id, status: 'published', page: `Article_Learning_${id.replace('article_', 'Article')}.html`, published_at: new Date().toISOString() });
+      const now = new Date().toISOString();
+      const current = await store().get(id, { type: 'json' }) || {};
+      await store().setJSON(id, { ...current, ...payload, id, status: 'published', page: `/article?id=${encodeURIComponent(id)}`, published_at: current.published_at || now, updated_at: now });
       if (requestedId && requestedId !== id) await getStore({ name: 'leadership-article-drafts', consistency: 'strong' }).delete(requestedId);
-      return json(200, { ok: true, id, page: `Article_Learning_${id.replace('article_', 'Article')}.html` });
+      return json(200, { ok: true, id, page: `/article?id=${encodeURIComponent(id)}` });
     }
     return json(404, { error: '找不到 API 路徑', path });
   } catch (error) { return json(500, { error: error.message || '伺服器錯誤' }); }

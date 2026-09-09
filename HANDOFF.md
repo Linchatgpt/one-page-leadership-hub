@@ -13,6 +13,13 @@
 
 - 使用者確認目前版本為定版，程式內容基準為 `c0370e0`，完整定版以標籤 `leadership-hub-final-2026-09-08` 為準。
 - GitHub `main` 與 Netlify production 已同步；正式網站為 https://one-page-leadership-hub.netlify.app。
+
+## 2026-09-10：動態發布模板分支
+
+- 分支：`codex/dynamic-publishing-template`。
+- 舊 ARTICLE 19 已移除，ARTICLE 01–18 保留不變。
+- 預覽與正式雲端文章共用 `netlify/functions/lib/render-article.mjs`；新文章從 ARTICLE 19 起以雲端動態頁發布，音檔使用獨立 API。
+- 尚未合併、推送或部署；需先完成本機 Chrome 驗證，再依使用者明確指示發布。
 - ARTICLE 17 主圖為 `assets/article-17-from-answers-to-learning-illustration-v2.png`，採 ARTICLE 15／16 的細緻水彩墨線風格。
 - 目錄中的已發布文章固定連到正式 HTML；雲端資料只更新文章卡內容。
 - 已發布文章的外部影音網址由工作台同步至雲端，正式文章頁透過 `assets/article-live-video.js` 套用最新版網址。

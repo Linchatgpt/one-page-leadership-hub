@@ -29,3 +29,7 @@ python3 scripts/author_server.py
 
 線上工作台為 [https://one-page-leadership-hub.netlify.app/author-admin.html](https://one-page-leadership-hub.netlify.app/author-admin.html)。草稿與已發布文章資料會同步雲端；已發布文章修改外部影音網址後，正式文章頁重新整理即可取得最新版。文章主圖仍由 Codex 製作並納入專案後部署。
 - `只檢查，不發布`：只進行本地與 Chrome 驗證
+
+### 動態發布文章
+
+ARTICLE 01–18 維持原有靜態頁。新文章發布後由雲端建立 `article_N` 紀錄，目錄會以最新順序載入，文章連結進入共用標準模板；預覽也使用相同模板，不需要先生成靜態 HTML 才能看見正確格式。若文章沒有主圖，頁面會保留版型但不顯示破圖，之後可由 Codex 補上專屬 PNG。音檔會透過文章專屬 API 播放。
