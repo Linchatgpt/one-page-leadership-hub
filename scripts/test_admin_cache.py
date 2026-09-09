@@ -73,6 +73,14 @@ class AdminCachePolicyTest(unittest.TestCase):
         self.assertIn("fetch('/api/list-published'", article_script)
         self.assertIn('syncExternalVideo', article_script)
 
+    def test_static_catalog_stops_at_article_18(self):
+        article_ids = sorted(
+            path.parent.name
+            for path in (ROOT / 'content' / 'articles').glob('article_*/article.json')
+        )
+        self.assertNotIn('article_19', article_ids)
+        self.assertTrue(all(int(article_id.split('_')[1]) <= 18 for article_id in article_ids))
+
 
 if __name__ == '__main__':
     unittest.main()
