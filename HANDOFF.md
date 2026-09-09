@@ -7,6 +7,7 @@
 - 已還原舊雲端文章全文及 Markdown 表格；建置後表格會輸出為 `.reading-table` HTML。
 - `list-published` 會隱藏已遷移的舊 ID `draft_1788935242062`，避免目錄出現 ARTICLE 21 或重複文章。
 - 未來發布只能配發 `article_N`，N 取現有正式文章最大編號加一；不可從 draft ID 或建立時間推算。
+- ARTICLE 19 摘要音檔為 `audio_summaries/article_19_summary.mp3`，口播稿為同名 `.txt`，使用本專案 `.env` 固定的 `MINIMAX_VOICE_ID`。
 
 ## 2026-09-08 定版基準
 
