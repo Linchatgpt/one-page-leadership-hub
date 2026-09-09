@@ -1,0 +1,21 @@
+{
+  "id": "article_19",
+  "title": "好教練不急著要答案",
+  "subtitle": "創造能反思的心理安全空間",
+  "category": "管理教練",
+  "reading_minutes": 6,
+  "summary": "好的教練先讓對方回到能思考的狀態，再透過提問、聆聽與沉默，協助對方看見自己的模式。",
+  "status": "published",
+  "start_prompt": "回想一次你急著給答案，卻沒有讓對方真正思考的管理情境。",
+  "orientation": ["先安定情緒", "創造安全感", "保留思考空間", "回到工作現場"],
+  "quick_scan": [],
+  "case": {"title":"從防衛回到反思","scenario":"部屬在專案受挫後沉默，主管需要先理解其狀態，再進入教練對話。","turning_point":"主管先聆聽與同理，讓部屬恢復思考空間。","outcome":"對話最後形成可在工作現場驗證的下一步。"},
+  "questions": [],
+  "focus_tips": {},
+  "tools": [],
+  "hero_image": "assets/article-19-coaching-reflection-illustration.png",
+  "hero_image_alt": "好教練不急著要答案",
+  "layout": "article",
+  "page": "Article_Learning_Article19.html",
+  "audio": false
+}

@@ -65,7 +65,22 @@ export default async (event, context, forcedPath = '') => {
     if (path === '/list-drafts') { const { blobs } = await getStore({ name: 'leadership-article-drafts', consistency: 'strong' }).list(); const drafts = []; for (const blob of blobs) { const item = await getStore({ name: 'leadership-article-drafts', consistency: 'strong' }).get(blob.key, { type: 'json' }); if (item) drafts.push(item); } return json(200, drafts); }
     if (path === '/delete-draft') { const id = String(payload.id || ''); if (!id) return json(400, { error: '缺少草稿 ID' }); await getStore({ name: 'leadership-article-drafts', consistency: 'strong' }).delete(id); return json(200, { ok: true }); }
     if (path === '/save-published') { const id = String(payload.id || ''); if (!/^article_\d+$/.test(id)) return json(400, { error: '已發布文章必須保留原文章 ID' }); const current = await store().get(id, { type: 'json' }) || {}; await store().setJSON(id, { ...current, ...payload, id, status: 'published', published_at: current.published_at || payload.published_at || new Date().toISOString(), updated_at: new Date().toISOString() }); return json(200, { ok: true, id }); }
-    if (path === '/publish-article') { const id = String(payload.id || `article_${Date.now()}`).replace(/[^a-zA-Z0-9_-]/g, '-'); await store().setJSON(id, { ...payload, id, status: 'published', published_at: new Date().toISOString() }); await getStore({ name: 'leadership-article-drafts', consistency: 'strong' }).delete(String(payload.id || '')); return json(200, { ok: true, id, page: `Article_Learning_${id.replace('article_', 'Article')}.html` }); }
+    if (path === '/publish-article') {
+      const requestedId = String(payload.id || '');
+      let id = requestedId;
+      if (!/^article_\d+$/.test(id)) {
+        const existing = await store().list();
+        let highest = 0;
+        for (const blob of existing.blobs || []) {
+          const match = String(blob.key).match(/^article_(\d+)$/);
+          if (match) highest = Math.max(highest, Number(match[1]));
+        }
+        id = `article_${highest + 1}`;
+      }
+      await store().setJSON(id, { ...payload, id, status: 'published', page: `Article_Learning_${id.replace('article_', 'Article')}.html`, published_at: new Date().toISOString() });
+      if (requestedId && requestedId !== id) await getStore({ name: 'leadership-article-drafts', consistency: 'strong' }).delete(requestedId);
+      return json(200, { ok: true, id, page: `Article_Learning_${id.replace('article_', 'Article')}.html` });
+    }
     return json(404, { error: '找不到 API 路徑', path });
   } catch (error) { return json(500, { error: error.message || '伺服器錯誤' }); }
 };

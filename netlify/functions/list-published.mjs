@@ -10,6 +10,11 @@ export default async function () {
   }
   articles.sort((a, b) => new Date(a.published_at || 0) - new Date(b.published_at || 0));
   const highest = articles.reduce((max, article) => Math.max(max, Number(String(article.id).match(/article_(\d+)$/)?.[1] || 0)), 17);
-  const result = articles.map((article, index) => ({ ...article, number: Number(String(article.id).match(/article_(\d+)$/)?.[1] || highest + index + 1) }));
+  const legacy = articles.filter((article) => !/^article_\d+$/.test(String(article.id)));
+  const result = articles.map((article, index) => {
+    const match = String(article.id).match(/^article_(\d+)$/);
+    const number = match ? Number(match[1]) : highest + legacy.indexOf(article) + 1;
+    return { ...article, number, page: match ? (article.page || `Article_Learning_Article${number}.html`) : undefined };
+  });
   return new Response(JSON.stringify(result), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
 }
