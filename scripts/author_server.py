@@ -34,6 +34,50 @@ def normalize_advanced_result(result):
     result['body_markdown'] = body
     return result
 
+def normalize_quick_scan(value):
+    if not isinstance(value, list):
+        return []
+    normalized = []
+    for raw in value:
+        if isinstance(raw, list):
+            item = {'question': raw[0] if raw else '', 'options': raw[1:]}
+        elif isinstance(raw, str):
+            item = {'question': raw, 'options': []}
+        elif isinstance(raw, dict):
+            item = raw
+        else:
+            item = {}
+        raw_options = item.get('options') or item.get('choices') or item.get('answers') or []
+        options = []
+        for raw_option in raw_options if isinstance(raw_options, list) else []:
+            option = {'text': raw_option} if isinstance(raw_option, str) else (raw_option if isinstance(raw_option, dict) else {})
+            options.append({
+                'text': str(option.get('text') or option.get('label') or option.get('value') or '').strip(),
+                'feedback': str(option.get('feedback') or option.get('explanation') or option.get('reason') or '').strip(),
+            })
+        normalized.append({
+            'question': str(item.get('question') or item.get('prompt') or item.get('prompt_text') or item.get('title') or item.get('text') or item.get('label') or '').strip(),
+            'options': options,
+        })
+    return normalized
+
+def validate_quick_scan(value):
+    quick_scan = normalize_quick_scan(value)
+    issues = []
+    if len(quick_scan) != 3:
+        issues.append('快問快答需要正好 3 題')
+    for index, item in enumerate(quick_scan, 1):
+        if not item['question']:
+            issues.append(f'第 {index} 題缺少題目')
+        if len(item['options']) != 2:
+            issues.append(f'第 {index} 題需要 2 個選項')
+        for option_index, option in enumerate(item['options'], 1):
+            if not option['text']:
+                issues.append(f'第 {index} 題選項 {option_index} 缺少文字')
+            if not option['feedback']:
+                issues.append(f'第 {index} 題選項 {option_index} 缺少回饋')
+    return not issues, issues, quick_scan
+
 def load_env():
     path = ROOT / '.env'
     if path.is_file():
@@ -81,6 +125,9 @@ class Handler(SimpleHTTPRequestHandler):
         if self.path == '/api/generate-summary-audio':
             self.generate_summary_audio()
             return
+        if self.path == '/api/regenerate-quick-scan':
+            self.regenerate_quick_scan()
+            return
         if self.path == '/api/convert-pdf':
             self.convert_pdf()
             return
@@ -97,7 +144,15 @@ class Handler(SimpleHTTPRequestHandler):
             self.send_json(200, result)
         except Exception as exc:
             self.log_message('render preview error: %s', exc)
-        self.send_json(500, {'error': str(exc)})
+            self.send_json(500, {'error': str(exc)})
+
+    def regenerate_quick_scan(self):
+        try:
+            length = int(self.headers.get('Content-Length', '0'))
+            payload = json.loads(self.rfile.read(length) or '{}')
+            self.send_json(200, {'quick_scan': generate_quick_scan(payload)})
+        except Exception as exc:
+            self.send_json(500, {'error': str(exc)})
 
     def delete_draft(self):
         """Local drafts live in the browser; acknowledge the deletion request.
@@ -380,7 +435,37 @@ def generate(payload):
     if missing:
         raise RuntimeError('AI 回應缺少欄位：' + ', '.join(missing))
     result = clean_symbols(result)
-    return normalize_advanced_result(result) if payload.get('mode') != 'basic' else result
+    if payload.get('mode') != 'basic':
+        result = normalize_advanced_result(result)
+        valid, _, quick_scan = validate_quick_scan(result.get('quick_scan'))
+        result['quick_scan'] = quick_scan if valid else generate_quick_scan({**payload, **result})
+    return result
+
+def generate_quick_scan(payload):
+    endpoint = os.environ.get('AI_API_ENDPOINT', 'https://api.openai.com/v1/chat/completions')
+    api_key = os.environ.get('AI_API_KEY', '')
+    if not api_key:
+        raise RuntimeError('尚未設定 AI_API_KEY')
+    system = '你是繁體中文管理學習活動編輯。只回傳 JSON，唯一欄位為 quick_scan。quick_scan 必須是正好3題；每題必須有非空白 question，以及正好2個 options；每個 option 必須有非空白 text 與 feedback。題目要從文章的真實管理情境推導，兩個選項都要合理但代表不同判斷，回饋要指出可能影響。不要回傳其他文章欄位。'
+    user = json.dumps({
+        'title': clean_symbols(payload.get('title', '')),
+        'summary': clean_symbols(payload.get('summary', '')),
+        'body_markdown': clean_symbols(str(payload.get('body_markdown') or payload.get('source_text') or '')[:6000]),
+    }, ensure_ascii=False)
+    request = urllib.request.Request(endpoint, data=json.dumps({
+        'model': os.environ.get('AI_MODEL', 'gpt-5.6-luna'),
+        'reasoning_effort': 'none',
+        'messages': [{'role': 'system', 'content': system}, {'role': 'user', 'content': user}],
+        'response_format': {'type': 'json_object'},
+        'max_completion_tokens': 1800,
+    }, ensure_ascii=False).encode(), headers={'Content-Type': 'application/json', 'Authorization': 'Bearer ' + api_key}, method='POST')
+    with urllib.request.urlopen(request, timeout=120, context=ssl.create_default_context(cafile=certifi.where())) as response:
+        data = json.loads(response.read())
+    result = json.loads(data['choices'][0]['message']['content'])
+    valid, issues, quick_scan = validate_quick_scan(result.get('quick_scan'))
+    if not valid:
+        raise RuntimeError('快問快答生成不完整：' + '；'.join(issues) + '。原草稿已保留，請重新生成這個區塊。')
+    return quick_scan
 
 def generate_audio_script(title, body):
     endpoint = os.environ.get('AI_API_ENDPOINT', 'https://api.openai.com/v1/chat/completions')
