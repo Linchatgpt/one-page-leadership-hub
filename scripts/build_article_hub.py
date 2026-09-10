@@ -210,7 +210,12 @@ def main():
         if d.get('audio', True) and not audio.is_file(): missing.append(f'{d.get("id", folder.name)}: {audio.relative_to(ROOT)}')
     if missing:
         raise FileNotFoundError('Missing hero image asset(s): ' + '; '.join(missing))
-    article_folders=[folder for folder in sorted(ARTICLES.iterdir(), reverse=True) if folder.is_dir()]
+    article_folders=[]
+    for folder in sorted(ARTICLES.iterdir(), reverse=True):
+        if not folder.is_dir(): continue
+        article_id=str(json.loads((folder/'article.json').read_text()).get('id',''))
+        if re.fullmatch(r'article_(?:0[1-9]|1[0-8])', article_id):
+            article_folders.append(folder)
     card_groups=[]
     for start in range(0,len(article_folders),4):
         group_cards=[]
@@ -250,6 +255,11 @@ def main():
     for folder in sorted(ARTICLES.iterdir(), reverse=True):
         if not folder.is_dir(): continue
         data=json.loads((folder/'article.json').read_text())
+        # Static pages are the immutable baseline. Dynamic articles must come
+        # from the cloud API so local/browser leftovers cannot be bundled into
+        # the deployed workbench as if they were published records.
+        article_id=str(data.get('id',''))
+        if not re.fullmatch(r'article_(?:0[1-9]|1[0-8])', article_id): continue
         source_markdown=folder/'article.md'
         if source_markdown.is_file(): data['body_markdown']=source_markdown.read_text()
         data['page']=f'Article_Learning_{data["id"].replace("article_", "Article")}.html'
