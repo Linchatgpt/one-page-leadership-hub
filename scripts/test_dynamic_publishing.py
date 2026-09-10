@@ -50,6 +50,12 @@ class DynamicPublishingTests(unittest.TestCase):
         self.assertIn('let highest = STATIC_ARTICLE_MAX;', source)
         self.assertIn('page: `/article?id=${encodeURIComponent(id)}`', source)
 
+    def test_local_publish_does_not_require_image_generation(self):
+        source = (ROOT / 'scripts' / 'author_server.py').read_text()
+        publish_block = source[source.index('    def publish_article'):source.index('    def save_published_article')]
+        self.assertNotIn('generate-article-image', publish_block)
+        self.assertNotIn('主圖生成失敗', publish_block)
+
 
 if __name__ == '__main__':
     unittest.main()

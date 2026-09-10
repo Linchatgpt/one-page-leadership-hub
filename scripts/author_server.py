@@ -193,15 +193,6 @@ class Handler(SimpleHTTPRequestHandler):
             article = json.loads(self.rfile.read(length) or '{}')
             body = str(article.pop('body_markdown', '')).strip()
             if not article.get('title') or not body: raise ValueError('文章標題與正文不可為空')
-            image_request = urllib.request.Request(
-                f"http://127.0.0.1:{os.environ.get('PORT', '5200')}/api/generate-article-image",
-                data=json.dumps(article).encode(), headers={'content-type': 'application/json'})
-            with urllib.request.urlopen(image_request, timeout=240) as image_response:
-                image_result = json.loads(image_response.read().decode())
-            if not image_result.get('hero_image'):
-                raise ValueError(image_result.get('error') or '發布前主圖生成失敗')
-            article['hero_image'] = image_result['hero_image']
-            article['hero_image_alt'] = image_result.get('hero_image_alt') or article.get('title', '')
             article_id = str(article.get('id', ''))
             if not re.fullmatch(r'article_\d+', article_id):
                 existing_id = ''
