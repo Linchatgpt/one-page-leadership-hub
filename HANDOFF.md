@@ -1,6 +1,6 @@
 # Handoff
 
-## 2026-09-10：ARTICLE 19 舊草稿遷移
+## 2026-09-10：ARTICLE 19 舊草稿遷移與正式發布
 
 - 「好教練不急著要答案」的正式來源已建立於 `content/articles/article_19/`。
 - 正式頁面為 `Article_Learning_Article19.html`，使用 `assets/article-19-coaching-reflection-illustration.png`。
@@ -8,6 +8,7 @@
 - `list-published` 會隱藏已遷移的舊 ID `draft_1788935242062`，避免目錄出現 ARTICLE 21 或重複文章。
 - 未來發布只能配發 `article_N`，N 取現有正式文章最大編號加一；不可從 draft ID 或建立時間推算。
 - ARTICLE 19 摘要音檔為 `audio_summaries/article_19_summary.mp3`，口播稿為同名 `.txt`，使用本專案 `.env` 固定的 `MINIMAX_VOICE_ID`。
+- ARTICLE 19 已發布至雲端正式資料，公開頁為 `https://one-page-leadership-hub.netlify.app/article?id=article_19`；目錄、PNG 主圖與摘要播放器已完成驗證。
 
 ## 2026-09-08 定版基準
 
@@ -16,7 +17,7 @@
 
 ## 2026-09-10：動態發布模板分支
 
-- 分支：`codex/dynamic-publishing-template`。
+- 分支：`codex/dynamic-publishing-template`；ARTICLE 19 發布修正分支 `codex/preview-article19` 已合併至 `main`。
 - 舊 ARTICLE 19 已移除，ARTICLE 01–18 保留不變。
 - 預覽與正式雲端文章共用 `netlify/functions/lib/render-article.mjs`；新文章從 ARTICLE 19 起以雲端動態頁發布，音檔使用獨立 API。
 - 已完成本機驗證，合併至 `main` 並推送 GitHub；2026-09-10 已部署至 Netlify production。
@@ -60,12 +61,12 @@ Markdown 來源中的 `###` 小標由建置器統一轉為 `<h3>`；不得讓原
 python3 scripts/build_article_hub.py
 ```
 
-### 2026-09-10 預覽工作狀態
+### 2026-09-10 預覽與發布工作狀態
 
-- 目前在分支 `codex/preview-article19`，尚未合併 `main`、尚未推送或部署。
+- ARTICLE 19 已由 `codex/preview-article19` 合併至 `main`，推送 GitHub 並完成 Netlify production 部署。
 - 「好教練不急著要答案」已用雲端草稿資料在本機 5200 預覽；預覽已確認標題、專屬 PNG 主圖、課前三題（預設收合）、正文表格、情境案例、四題自我整理、兩個工具與 04／05 區塊均存在。
 - 預覽資料暫存於瀏覽器 localStorage 的 `leadershipHub:articleAdmin:preview`，這是為了讓使用者先檢視，不會改動雲端草稿或正式文章。
-- 使用者確認後，才把整理後資料寫回來源、合併 `main`、推送 GitHub 並部署 Netlify；未確認前不要發布。
+- 使用者確認預覽後，已把整理後資料寫回來源、合併 `main`、推送 GitHub 並部署 Netlify。
 - 防止再次發生內容稀釋：雲端草稿不得以摘要或截短正文取代完整文章；預覽資料必須以完整 `article.md` 為正文來源，並以 ARTICLE 17／18 的正式頁作為視覺與結構基準。發布前需檢查正文長度、段落標題、表格、工具卡、課前題目、自我整理、主圖、音訊與頁尾。
 - 2026-09-10：共用渲染器與本機預覽已修正自我整理選項物件被直接輸出的問題；工具卡現在保留步驟與 80–120 字左右的用途說明。預覽確認無 `{text, feedback}` 原始物件字串、`[object Object]` 或重複工具卡。
 - 後續每篇新文章都要先完成「ARTICLE 17／18 對齊檢查」：正文不可用摘要替代，預覽與發布必須使用共用渲染器，並逐項驗證題目、工具、表格、主圖、音訊與頁尾；未通過不得發布。
