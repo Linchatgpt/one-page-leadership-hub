@@ -47,7 +47,7 @@ def load_env():
 class Handler(SimpleHTTPRequestHandler):
     def end_headers(self):
         path = self.path.split('?', 1)[0]
-        if path in ('/author-admin.html', '/preview.html'):
+        if path in ('/author-admin.html', '/preview.html') or path.startswith('/assets/article-learning.css'):
             self.send_header('Cache-Control', 'no-store, no-cache, must-revalidate')
             self.send_header('Pragma', 'no-cache')
             self.send_header('Expires', '0')
