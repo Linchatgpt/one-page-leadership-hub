@@ -139,14 +139,16 @@ class Handler(SimpleHTTPRequestHandler):
                 normalized_tools.append(item)
             article['tools'] = normalized_tools
             article = normalize_advanced_result(article)
-            import sys
-            sys.path.insert(0, str(ROOT / 'scripts'))
-            from build_article_hub import build_article, SUBSCRIPTION_URL
-            html = build_article(article, str(article.get('body_markdown', '')))
-            html = html.replace(
-                '<a class="subscribe-link" href="'+SUBSCRIPTION_URL+'" target="_blank" rel="noopener">訂閱學習更新</a></div>',
-                '<a class="subscribe-link" href="'+SUBSCRIPTION_URL+'" target="_blank" rel="noopener">訂閱學習更新</a><a href="author-admin.html">回到文章工作台</a></div>'
+            renderer = "import fs from 'node:fs'; import renderArticle from './netlify/functions/lib/render-article.mjs'; process.stdout.write(renderArticle(JSON.parse(fs.readFileSync(0, 'utf8'))));"
+            rendered = subprocess.run(
+                ['node', '--input-type=module', '-e', renderer],
+                cwd=ROOT, input=json.dumps(article, ensure_ascii=False),
+                text=True, capture_output=True, check=False
             )
+            if rendered.returncode != 0:
+                raise RuntimeError(rendered.stderr.strip() or '共用文章模板渲染失敗')
+            html = rendered.stdout
+            html = html.replace('</div></footer>', '<a href="/author-admin.html">回到文章工作台</a></div></footer>')
             self.send_response(200)
             raw = html.encode('utf-8')
             self.send_header('Content-Type', 'text/html; charset=utf-8')
