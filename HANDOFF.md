@@ -9,6 +9,7 @@
 - 未來發布只能配發 `article_N`，N 取現有正式文章最大編號加一；不可從 draft ID 或建立時間推算。
 - ARTICLE 19 摘要音檔為 `audio_summaries/article_19_summary.mp3`，口播稿為同名 `.txt`，使用本專案 `.env` 固定的 `MINIMAX_VOICE_ID`。
 - ARTICLE 19 已發布至雲端正式資料，公開頁為 `https://one-page-leadership-hub.netlify.app/article?id=article_19`；目錄、PNG 主圖與摘要播放器已完成驗證。
+- 2026-09-11：摘要播放器依使用者確認移出正式文章內文；目錄卡片仍保留「播放摘要」。共用渲染器與預覽同步，不影響文章音檔 API。
 
 ## 2026-09-08 定版基準
 

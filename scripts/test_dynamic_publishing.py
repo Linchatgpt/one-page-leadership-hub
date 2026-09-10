@@ -37,6 +37,7 @@ class DynamicPublishingTests(unittest.TestCase):
         for marker in ['class="article-hero-visual"', 'id="s1"', 'id="s2"', 'id="s3"', 'id="s4"', 'id="s5"', 'class="reading-table"', 'class="reading-tool"', 'site-footer']:
             self.assertIn(marker, html)
         self.assertNotIn('工具內容待補充', html)
+        self.assertNotIn('播放摘要', html)
 
     def test_empty_tools_are_omitted(self):
         article = {'id': 'article_19', 'title': '測試', 'body_markdown': '正文', 'tools': []}
