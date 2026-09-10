@@ -1,6 +1,16 @@
 const cleanText = (value) => String(value ?? '').replace(/\s+/g, ' ').trim();
 
 export function normalizeQuickScan(value) {
+  if (typeof value === 'string') {
+    try {
+      value = JSON.parse(value);
+    } catch {
+      return [];
+    }
+  }
+  if (value && !Array.isArray(value) && typeof value === 'object') {
+    value = value.quick_scan || value.questions || value.items || value.data;
+  }
   if (!Array.isArray(value)) return [];
   return value.map((raw) => {
     const item = Array.isArray(raw)

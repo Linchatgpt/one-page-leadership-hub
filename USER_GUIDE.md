@@ -27,9 +27,10 @@ python3 scripts/author_server.py
 
 開啟 [http://localhost:5200/author-admin.html](http://localhost:5200/author-admin.html)。文章草稿先保存在本機瀏覽器；確認後可匯出備份，再由建置器生成正式文章頁。AI 功能使用本專案 `.env` 的 API 設定，與其他專案分開。
 
-線上工作台為 [https://one-page-leadership-hub.netlify.app/author-admin.html](https://one-page-leadership-hub.netlify.app/author-admin.html)。草稿與已發布文章資料會同步雲端；已發布文章修改外部影音網址後，正式文章頁重新整理即可取得最新版。文章主圖仍由 Codex 製作並納入專案後部署。
+線上工作台為 [https://one-page-leadership-hub.netlify.app/author-admin.html](https://one-page-leadership-hub.netlify.app/author-admin.html)。工作台只保存雲端草稿，不提供預覽與正式發布按鈕；文章主圖、正式模板預覽與發布由 Codex 接手完成。
 
 進階 AI 生成後，工作台會顯示「課前情境快問快答」編輯區。完整標準為三題、每題兩個選項，且每個選項都有回饋。可直接修改內容，或使用「只重新生成快問快答」而不重做整篇文章；內容不完整時系統會阻止發布。預覽只呈現已保存內容，不會另外補寫題目。
+- 若雲端資料是較舊的 JSON 字串格式，系統會在預覽與正式文章顯示前自動轉成標準題目格式，不需要重新建立整篇文章。
 - `只檢查，不發布`：只進行本地與 Chrome 驗證
 
 ### 動態發布文章
