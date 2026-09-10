@@ -56,7 +56,7 @@ function toolHtml(tool) {
 }
 
 function scanHtml(items = []) {
-  return items.map((item, index) => { const choices = item.options || item.choices || item.answers || []; return `<div class="scan-question"><p>${String(index + 1).padStart(2, '0')} · ${esc(text(item.question || item.prompt || item.title))}</p><div class="scan-options">${choices.map((option) => { const value = typeof option === 'string' ? { text: option } : option || {}; return `<button type="button" data-feedback="${esc(value.feedback || '')}">${esc(text(value.text || value.label || value.value))}</button>`; }).join('')}</div><p class="scan-feedback" aria-live="polite"></p></div>`; }).join('');
+  return items.map((rawItem, index) => { const item = typeof rawItem === 'string' ? { question: rawItem } : rawItem || {}; const choices = item.options || item.choices || item.answers || []; return `<div class="scan-question"><p>${String(index + 1).padStart(2, '0')} · ${esc(text(item.question || item.prompt || item.title))}</p><div class="scan-options">${choices.map((option) => { const value = typeof option === 'string' ? { text: option } : option || {}; return `<button type="button" data-feedback="${esc(value.feedback || '')}">${esc(text(value.text || value.label || value.value))}</button>`; }).join('')}</div><p class="scan-feedback" aria-live="polite"></p></div>`; }).join('');
 }
 
 function questionsHtml(items = []) {
