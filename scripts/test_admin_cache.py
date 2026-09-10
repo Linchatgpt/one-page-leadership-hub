@@ -63,7 +63,8 @@ class AdminCachePolicyTest(unittest.TestCase):
 
     def test_workbench_loads_video_sync_fix_without_stale_cache(self):
         workbench = (ROOT / 'author-admin.html').read_text()
-        self.assertIn('assets/admin.js?v=20260910-cloud-source', workbench)
+        self.assertIn('assets/admin.js?v=20260910-quick-scan-quality', workbench)
+        self.assertIn('assets/admin.css?v=20260910-quick-scan-quality', workbench)
 
     def test_article_page_refreshes_external_video_from_cloud(self):
         article_script = ''.join(path.read_text() for path in [

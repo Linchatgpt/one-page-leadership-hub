@@ -11,6 +11,11 @@
   status = 200
 
 [[redirects]]
+  from = "/api/regenerate-quick-scan"
+  to = "/.netlify/functions/api?route=regenerate-quick-scan"
+  status = 200
+
+[[redirects]]
   from = "/api/generate-audio-script"
   to = "/.netlify/functions/generate-audio-script"
   status = 200

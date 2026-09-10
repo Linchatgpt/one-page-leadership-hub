@@ -5,6 +5,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 RENDERER = ROOT / 'netlify' / 'functions' / 'lib' / 'render-article.mjs'
+QUALITY = ROOT / 'netlify' / 'functions' / 'lib' / 'learning-quality.mjs'
 
 
 class DynamicPublishingTests(unittest.TestCase):
@@ -55,6 +56,47 @@ class DynamicPublishingTests(unittest.TestCase):
         publish_block = source[source.index('    def publish_article'):source.index('    def save_published_article')]
         self.assertNotIn('generate-article-image', publish_block)
         self.assertNotIn('主圖生成失敗', publish_block)
+
+    def test_quick_scan_quality_requires_three_complete_questions(self):
+        valid = [
+            {'question': f'題目 {index}', 'options': [
+                {'text': '選項 A', 'feedback': '回饋 A'},
+                {'text': '選項 B', 'feedback': '回饋 B'},
+            ]}
+            for index in range(1, 4)
+        ]
+        invalid = valid[:2] + [{'question': '缺少選項', 'options': []}]
+        source = (
+            f"import {{ validateQuickScan }} from './{QUALITY.relative_to(ROOT)}'; "
+            f"console.log(JSON.stringify([validateQuickScan({json.dumps(valid, ensure_ascii=False)}), "
+            f"validateQuickScan({json.dumps(invalid, ensure_ascii=False)})]));"
+        )
+        result = self.run_node(source)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        valid_result, invalid_result = json.loads(result.stdout)
+        self.assertTrue(valid_result['valid'])
+        self.assertEqual(valid_result['issues'], [])
+        self.assertFalse(invalid_result['valid'])
+        self.assertIn('第 3 題需要 2 個選項', invalid_result['issues'])
+
+    def test_cloud_and_local_generation_retry_only_quick_scan(self):
+        api = (ROOT / 'netlify' / 'functions' / 'api.mjs').read_text()
+        local = (ROOT / 'scripts' / 'author_server.py').read_text()
+        admin = (ROOT / 'assets' / 'admin.js').read_text()
+        self.assertIn("path === '/regenerate-quick-scan'", api)
+        self.assertIn("'/api/regenerate-quick-scan'", admin)
+        self.assertIn("self.path == '/api/regenerate-quick-scan'", local)
+        self.assertIn('validateQuickScan', api)
+
+    def test_workbench_blocks_publish_when_quick_scan_is_incomplete(self):
+        admin = (ROOT / 'assets' / 'admin.js').read_text()
+        self.assertIn('快問快答尚未完整，請先修正或重新生成', admin)
+        self.assertIn('renderQuickScanEditor', admin)
+
+    def test_shared_template_keeps_quick_scan_collapsed_by_default(self):
+        renderer = RENDERER.read_text()
+        self.assertIn('<details class="quick-scan">', renderer)
+        self.assertNotIn('<details class="quick-scan" open>', renderer)
 
 
 if __name__ == '__main__':

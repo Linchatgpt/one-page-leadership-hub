@@ -1,4 +1,5 @@
 import { getStore } from '@netlify/blobs';
+import { validateQuickScan } from './lib/learning-quality.mjs';
 
 const json = (statusCode, body) => new Response(JSON.stringify(body), { status: statusCode, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
 const bodyOf = async (event) => { try { if (typeof event.json === 'function') return await event.json(); if (typeof Request !== 'undefined' && event instanceof Request) return await event.json(); return typeof event.body === 'string' ? JSON.parse(event.body || '{}') : (event.body || event.payload || {}); } catch { throw new Error('請求格式不是有效 JSON'); } };
@@ -23,11 +24,21 @@ async function chat(system, user, max_tokens = 3000, asJson = true, modelOverrid
 }
 
 async function generateArticle(payload) {
-  const system = '你是繁體中文管理學習內容編輯。只回傳 JSON，不要 Markdown code fence。請產生 title（12個中文字以內）、subtitle、category、reading_minutes（整數）、summary（首頁方格用，1至2句）、start_prompt、orientation（4個字串）、quick_scan（3個物件）、body_markdown、case、questions（4個物件）、focus_tips、tools（1至2個物件）。正文使用 Markdown ## 小標題與標準表格；工具標記 <!-- TOOL_1 -->、<!-- TOOL_2 --> 必須放在最相關正文段落之後且不可集中在文末。不要輸出 JSON 物件到正文。';
+  const system = '你是繁體中文管理學習內容編輯。只回傳 JSON，不要 Markdown code fence。請產生 title（12個中文字以內）、subtitle、category、reading_minutes（整數）、summary（首頁方格用，1至2句）、start_prompt、orientation（4個字串）、quick_scan（正好3個物件；每個物件必須有 question，以及正好2個 options；每個 option 必須有 text 與 feedback）、body_markdown、case、questions（4個物件）、focus_tips、tools（1至2個物件）。快問快答必須直接從文章情境推導，兩個選項都要合理但能辨識不同管理判斷，feedback 要說明影響，不可留白。正文使用 Markdown ## 小標題與標準表格；工具標記 <!-- TOOL_1 -->、<!-- TOOL_2 --> 必須放在最相關正文段落之後且不可集中在文末。不要輸出 JSON 物件到正文。';
   const result = await chat(system, JSON.stringify({ title: clean(payload.title || ''), category: clean(payload.category || ''), source_text: clean(String(payload.source_text || '').slice(0, 6000)) }), 6000, true, 'gpt-5.4-mini');
   result.title = String(result.title || '').replace(/\s+/g, '').split(/[：:，,。！？!?]/, 1)[0].slice(0, 12);
   result.body_markdown = String(result.body_markdown || '').replace(/^\s*>\s?/gm, '').replace(/\n{3,}/g, '\n\n');
+  const checked = validateQuickScan(result.quick_scan);
+  result.quick_scan = checked.valid ? checked.quickScan : await regenerateQuickScan({ ...payload, ...result });
   return result;
+}
+
+async function regenerateQuickScan(payload) {
+  const system = '你是繁體中文管理學習活動編輯。只回傳 JSON，唯一欄位為 quick_scan。quick_scan 必須是正好3題；每題必須有非空白 question，以及正好2個 options；每個 option 必須有非空白 text 與 feedback。題目要從文章的真實管理情境推導，兩個選項都要合理但代表不同判斷，回饋要指出可能影響。不要回傳其他文章欄位。';
+  const result = await chat(system, JSON.stringify({ title: clean(payload.title || ''), summary: clean(payload.summary || ''), body_markdown: clean(String(payload.body_markdown || payload.source_text || '').slice(0, 6000)) }), 1800, true, 'gpt-5.4-mini');
+  const checked = validateQuickScan(result.quick_scan);
+  if (!checked.valid) throw new Error(`快問快答生成不完整：${checked.issues.join('；')}。原草稿已保留，請重新生成這個區塊。`);
+  return checked.quickScan;
 }
 
 async function audioScript(payload) {
@@ -60,6 +71,7 @@ export default async (event, context, forcedPath = '') => {
     if (method === 'GET' && path === '/health') return json(200, { ok: true, project: 'one-page-leadership-hub', runtime: 'netlify-functions' });
     if (method !== 'POST') return json(405, { error: '只接受 POST 請求' });
     if (path === '/generate-learning-page') return json(200, await generateArticle(payload));
+    if (path === '/regenerate-quick-scan') return json(200, { quick_scan: await regenerateQuickScan(payload) });
     if (path === '/generate-audio-script') return json(200, await audioScript(payload));
     if (path === '/generate-summary-audio') return json(200, await summaryAudio(payload));
     if (path === '/save-draft') { const id = String(payload.id || `draft_${Date.now()}`).replace(/[^a-zA-Z0-9_-]/g, '-'); await getStore({ name: 'leadership-article-drafts', consistency: 'strong' }).setJSON(id, { ...payload, id, status: 'draft', updated_at: new Date().toISOString() }); return json(200, { ok: true, id }); }
@@ -67,6 +79,8 @@ export default async (event, context, forcedPath = '') => {
     if (path === '/delete-draft') { const id = String(payload.id || ''); if (!id) return json(400, { error: '缺少草稿 ID' }); await getStore({ name: 'leadership-article-drafts', consistency: 'strong' }).delete(id); return json(200, { ok: true }); }
     if (path === '/save-published') { const id = String(payload.id || ''); if (!/^article_\d+$/.test(id)) return json(400, { error: '已發布文章必須保留原文章 ID' }); const current = await store().get(id, { type: 'json' }) || {}; await store().setJSON(id, { ...current, ...payload, id, status: 'published', published_at: current.published_at || payload.published_at || new Date().toISOString(), updated_at: new Date().toISOString() }); return json(200, { ok: true, id }); }
     if (path === '/publish-article') {
+      const quickScanCheck = validateQuickScan(payload.quick_scan);
+      if (payload.layout === 'article' && !quickScanCheck.valid) return json(422, { error: `快問快答尚未完整：${quickScanCheck.issues.join('；')}` });
       const requestedId = String(payload.id || '');
       let id = requestedId;
       if (!/^article_\d+$/.test(id)) {
