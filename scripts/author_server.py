@@ -200,7 +200,9 @@ class Handler(SimpleHTTPRequestHandler):
             for item in (article.get('questions') if isinstance(article.get('questions'), list) else []):
                 if not isinstance(item, dict) or not item.get('question'): continue
                 item.setdefault('label', '學習焦點')
-                item['options'] = [str(option) for option in item.get('options', []) if option]
+                item['options'] = [option if isinstance(option, dict) else {'text': str(option)} for option in item.get('options', []) if option]
+                for option in item['options']:
+                    option.setdefault('feedback', '')
                 normalized_questions.append(item)
             article['questions'] = normalized_questions
             normalized_tools = []
