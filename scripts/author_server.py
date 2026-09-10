@@ -69,6 +69,9 @@ class Handler(SimpleHTTPRequestHandler):
         if self.path == '/api/save-published':
             self.save_published_article()
             return
+        if self.path == '/api/delete-draft':
+            self.delete_draft()
+            return
         if self.path == '/api/generate-audio-script':
             self.generate_audio_script()
             return
@@ -94,7 +97,22 @@ class Handler(SimpleHTTPRequestHandler):
             self.send_json(200, result)
         except Exception as exc:
             self.log_message('render preview error: %s', exc)
-            self.send_json(500, {'error': str(exc)})
+        self.send_json(500, {'error': str(exc)})
+
+    def delete_draft(self):
+        """Local drafts live in the browser; acknowledge the deletion request.
+
+        The workbench removes the matching localStorage record after this
+        endpoint succeeds. No project article source is touched here.
+        """
+        try:
+            length = int(self.headers.get('Content-Length', '0'))
+            payload = json.loads(self.rfile.read(length) or '{}')
+            if not str(payload.get('id', '')).strip():
+                raise ValueError('缺少草稿 ID')
+            self.send_json(200, {'ok': True, 'local_only': True})
+        except Exception as exc:
+            self.send_json(400, {'error': str(exc)})
 
     def render_preview(self):
         try:
