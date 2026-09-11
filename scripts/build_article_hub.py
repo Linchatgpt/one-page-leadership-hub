@@ -214,7 +214,7 @@ def main():
     for folder in sorted(ARTICLES.iterdir(), reverse=True):
         if not folder.is_dir(): continue
         article_id=str(json.loads((folder/'article.json').read_text()).get('id',''))
-        if re.fullmatch(r'article_(?:0[1-9]|1[0-8])', article_id):
+        if re.fullmatch(r'article_(?:0[1-9]|1[0-9])', article_id):
             article_folders.append(folder)
     card_groups=[]
     for start in range(0,len(article_folders),4):
@@ -249,7 +249,8 @@ def main():
     index=index.replace('<a href="https://leading4elite.com/about_wesley/" target="_blank" rel="noopener">林祖威教練</a></div>','<a href="https://leading4elite.com/about_wesley/" target="_blank" rel="noopener">林祖威教練</a><a href="mailto:wesley.lin@leading4elite.com">wesley.lin@leading4elite.com</a></div>')
     index=index.replace('mailto:wesley.lin@leading4elite.com','https://mail.google.com/mail/?view=cm&amp;fs=1&amp;to=wesley.lin%40leading4elite.com').replace('href="https://mail.google.com/mail/?view=cm&amp;fs=1&amp;to=wesley.lin%40leading4elite.com">','href="https://mail.google.com/mail/?view=cm&amp;fs=1&amp;to=wesley.lin%40leading4elite.com" target="_blank" rel="noopener">').replace('不保存網上副本）','不保存網上副本')
     index=index.replace('</div><img src="assets/line-qr.png"', '<a class="subscribe-link" href="'+SUBSCRIPTION_URL+'" target="_blank" rel="noopener">訂閱學習更新</a></div><img src="assets/line-qr.png"')
-    index=index.replace('</body>', '<script src="assets/published.js?v=20260908-static-article-links"></script></body>')
+    # The directory is generated from the complete published source set. Do not
+    # fetch and append cloud cards after first paint; that caused ordering jumps.
     (ROOT/'index.html').write_text(inject_pwa(index))
     admin_records=[]
     for folder in sorted(ARTICLES.iterdir(), reverse=True):
