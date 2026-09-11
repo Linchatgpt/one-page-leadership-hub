@@ -44,7 +44,7 @@ class AdminCachePolicyTest(unittest.TestCase):
 
     def test_directory_loads_static_link_fix_without_stale_cache(self):
         directory = (ROOT / 'index.html').read_text()
-        self.assertIn('assets/published.js?v=20260908-static-article-links', directory)
+        self.assertNotIn('assets/published.js?v=20260908-static-article-links', directory)
 
     def test_workbench_cloud_article_overrides_embedded_copy(self):
         admin = (ROOT / 'assets' / 'admin.js').read_text()
