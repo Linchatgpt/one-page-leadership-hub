@@ -61,9 +61,15 @@ class AdminCachePolicyTest(unittest.TestCase):
         self.assertIn('function syncArticle(a)', admin)
         self.assertGreaterEqual(admin.count('syncArticle(a)'), 3)
 
+    def test_audio_base64_is_not_written_to_local_article_cache(self):
+        admin = (ROOT / 'assets' / 'admin.js').read_text()
+        self.assertIn('Audio is uploaded to the cloud', admin)
+        self.assertIn('audio_data,...record', admin)
+        self.assertIn("leadershipHub:articleAdmin:records", admin)
+
     def test_workbench_loads_video_sync_fix_without_stale_cache(self):
         workbench = (ROOT / 'author-admin.html').read_text()
-        self.assertIn('assets/admin.js?v=20260910-quick-scan-quality', workbench)
+        self.assertIn('assets/admin.js?v=20260912-audio-quota-fix', workbench)
         self.assertIn('assets/admin.css?v=20260910-quick-scan-quality', workbench)
 
     def test_article_page_refreshes_external_video_from_cloud(self):

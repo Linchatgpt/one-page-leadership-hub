@@ -1,4 +1,8 @@
 (function(){
+  // Audio is uploaded to the cloud, but a Base64 MP3 must never be copied into
+  // the browser's small localStorage article cache.
+  const rawStorageSetItem=localStorage.setItem.bind(localStorage);
+  localStorage.setItem=(storageKey,value)=>{if(storageKey==='leadershipHub:articleAdmin:records'){try{const records=JSON.parse(value);if(Array.isArray(records))value=JSON.stringify(records.map(({audio_data,...record})=>record));}catch{}}return rawStorageSetItem(storageKey,value);};
   async function readApiResponse(response){const text=await response.text();try{return JSON.parse(text);}catch{throw new Error(response.ok?'伺服器回應格式錯誤':'伺服器沒有回傳 JSON，可能是請求逾時；請稍後重試');}}
   const removedArticleIds=new Set(['draft_1788277967127','draft_1788278119851','draft_1788501382767']);
   const seed=Array.isArray(window.ADMIN_ARTICLES)?window.ADMIN_ARTICLES:[];

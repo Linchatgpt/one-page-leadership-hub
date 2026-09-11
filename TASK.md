@@ -75,3 +75,8 @@
 - 已保存修改前版本標記 `leadership-hub-before-unified-catalog-2026-09-11`，可回復。
 - 分支 `codex/unify-catalog-rendering` 將 ARTICLE 19 納入建置清單，目錄部署時一次產生完整文章方格。
 - 正式目錄不再於讀者載入後呼叫 `published.js` 補文章，避免先顯示 18 篇再動態插入第 19 篇。
+
+## 工作台口播音訊保存修正（2026-09-12）
+
+- 修正口播 MP3 Base64 寫入 `localStorage` 導致容量超額的問題。
+- 音訊仍會同步雲端並可在工作台試聽；本機文章快取不再保存大型 `audio_data`。

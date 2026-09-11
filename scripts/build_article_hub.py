@@ -267,6 +267,6 @@ def main():
         admin_records.append(data)
     admin=(ROOT/'author-admin.template.html').read_text()
     admin=admin.replace('__ADMIN_ARTICLES__',json.dumps(admin_records,ensure_ascii=False))
-    admin=admin.replace('assets/admin.js?v=20260908-unique-published','assets/admin.js?v=20260910-quick-scan-quality').replace('assets/admin.js?v=20260908-published-video-sync','assets/admin.js?v=20260910-quick-scan-quality').replace('assets/admin.js?v=20260910-cloud-source','assets/admin.js?v=20260910-quick-scan-quality')
+    admin=admin.replace('assets/admin.js?v=20260908-unique-published','assets/admin.js?v=20260912-audio-quota-fix').replace('assets/admin.js?v=20260908-published-video-sync','assets/admin.js?v=20260912-audio-quota-fix').replace('assets/admin.js?v=20260910-cloud-source','assets/admin.js?v=20260912-audio-quota-fix').replace('assets/admin.js?v=20260910-quick-scan-quality','assets/admin.js?v=20260912-audio-quota-fix')
     (ROOT/'author-admin.html').write_text(admin)
 if __name__=='__main__': main()
