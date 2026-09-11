@@ -48,7 +48,7 @@ class DynamicPublishingTests(unittest.TestCase):
 
     def test_new_publish_ids_start_after_static_articles(self):
         source = (ROOT / 'netlify' / 'functions' / 'api.mjs').read_text()
-        self.assertIn('const STATIC_ARTICLE_MAX = 18;', source)
+        self.assertIn('const STATIC_ARTICLE_MAX = 19;', source)
         self.assertIn('let highest = STATIC_ARTICLE_MAX;', source)
         self.assertIn('page: `/article?id=${encodeURIComponent(id)}`', source)
 
@@ -80,19 +80,19 @@ class DynamicPublishingTests(unittest.TestCase):
         self.assertFalse(invalid_result['valid'])
         self.assertIn('第 3 題需要 2 個選項', invalid_result['issues'])
 
-    def test_cloud_and_local_generation_retry_only_quick_scan(self):
+    def test_quick_scan_regeneration_is_server_only(self):
         api = (ROOT / 'netlify' / 'functions' / 'api.mjs').read_text()
         local = (ROOT / 'scripts' / 'author_server.py').read_text()
         admin = (ROOT / 'assets' / 'admin.js').read_text()
         self.assertIn("path === '/regenerate-quick-scan'", api)
-        self.assertIn("'/api/regenerate-quick-scan'", admin)
+        self.assertNotIn("'/api/regenerate-quick-scan'", admin)
         self.assertIn("self.path == '/api/regenerate-quick-scan'", local)
         self.assertIn('validateQuickScan', api)
 
     def test_workbench_blocks_publish_when_quick_scan_is_incomplete(self):
         admin = (ROOT / 'assets' / 'admin.js').read_text()
         self.assertNotIn('publishArticle', admin)
-        self.assertIn('renderQuickScanEditor', admin)
+        self.assertIn('課前快問快答由正式預覽／發布流程負責', admin)
 
     def test_shared_template_keeps_quick_scan_collapsed_by_default(self):
         renderer = RENDERER.read_text()

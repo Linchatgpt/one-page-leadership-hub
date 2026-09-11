@@ -10,7 +10,7 @@ export default async function () {
     if (article?.status === 'published' && article.title && article.body_markdown && !migratedLegacyIds.has(article.id)) articles.push(article);
   }
   articles.sort((a, b) => new Date(a.published_at || 0) - new Date(b.published_at || 0));
-  const highest = articles.reduce((max, article) => Math.max(max, Number(String(article.id).match(/article_(\d+)$/)?.[1] || 0)), 17);
+  const highest = articles.reduce((max, article) => Math.max(max, Number(String(article.id).match(/article_(\d+)$/)?.[1] || 0)), 19);
   const legacy = articles.filter((article) => !/^article_\d+$/.test(String(article.id)));
   const result = articles.map((article, index) => {
     const match = String(article.id).match(/^article_(\d+)$/);

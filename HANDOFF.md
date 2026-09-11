@@ -134,3 +134,9 @@ Article 03 的內容主線為：確認事實、辨認解讀、找到自己的承
 - 最近一次 PWA／手機版部署 commit：`b15b044`；production URL：https://one-page-leadership-hub.netlify.app。
 - ARTICLE 14 為白皮書頁型，不套用一般管理文章的快問快答、評估與工具卡；來源內容保留最低修改原則，PDF 五頁視覺以 `assets/article_14/page-01.png` 至 `page-05.png` 沿用，原始 PDF 可下載。
 - ARTICLE 14 預覽若出現內容重複，確認不要同時顯示全文 HTML 與完整 PDF 頁面；目前以原始五頁視覺為主，避免白皮書版面混亂。
+
+## ARTICLE 20 發布（2026-09-12）
+
+- ARTICLE 20 已以共用正式文章模板發布，文章 ID 為 `article_20`。
+- 主圖為 `assets/article-20-fact-interpretation-illustration.png`；工具卡已轉為 renderer 可辨識的結構。
+- 建置器與動態發布編號基準已更新到 19，避免後續自動編號覆蓋 ARTICLE 20。

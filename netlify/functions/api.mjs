@@ -5,7 +5,7 @@ const json = (statusCode, body) => new Response(JSON.stringify(body), { status: 
 const bodyOf = async (event) => { try { if (typeof event.json === 'function') return await event.json(); if (typeof Request !== 'undefined' && event instanceof Request) return await event.json(); return typeof event.body === 'string' ? JSON.parse(event.body || '{}') : (event.body || event.payload || {}); } catch { throw new Error('請求格式不是有效 JSON'); } };
 const clean = (value) => typeof value === 'string' ? value.replace(/[\*#＊＃]/g, '') : value;
 const store = () => getStore({ name: 'leadership-articles', consistency: 'strong' });
-const STATIC_ARTICLE_MAX = 18;
+const STATIC_ARTICLE_MAX = 19;
 
 async function chat(system, user, max_tokens = 3000, asJson = true, modelOverride = '') {
   const key = process.env.AI_API_KEY;

@@ -214,7 +214,7 @@ def main():
     for folder in sorted(ARTICLES.iterdir(), reverse=True):
         if not folder.is_dir(): continue
         article_id=str(json.loads((folder/'article.json').read_text()).get('id',''))
-        if re.fullmatch(r'article_(?:0[1-9]|1[0-9])', article_id):
+        if re.fullmatch(r'article_(?:0[1-9]|1[0-9]|20)', article_id):
             article_folders.append(folder)
     card_groups=[]
     for start in range(0,len(article_folders),4):
