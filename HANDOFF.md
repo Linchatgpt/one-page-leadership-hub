@@ -159,3 +159,8 @@ Article 03 的內容主線為：確認事實、辨認解讀、找到自己的承
 - 正文現保留一個跨部門案例、成人對話四步框架與兩張工具卡；自我整理題目已同步改寫，避免再次重複前文的沉默與注意力練習。
 - 口播文字與 MP3 已同步更新；預覽頁重新產生為 `http://127.0.0.1:5200/preview-article21.html?preview=20260912-v4`。
 - 已通過 `python3 scripts/build_article_hub.py`、`python3 -m unittest scripts/test_admin_cache.py` 與 `python3 scripts/test_article21_quality.py`。尚未發布、尚未合併 main、尚未推送或部署。
+
+## ARTICLE 21 雲端草稿登錄（2026-09-12）
+
+- ARTICLE 21 精煉版已寫入 Netlify 雲端草稿儲存，沿用 `article_21`，目前狀態為 `draft`；API 驗證可取得標題「維持成人自我狀態」、正文 1750 字元、2 張工具卡與 4 題自我整理。
+- 雲端工作台目前仍可能看不到它，因為正式網站的前端清單容錯修正尚未部署；修正提交為 `6d5bb46`，不涉及文章發布。
