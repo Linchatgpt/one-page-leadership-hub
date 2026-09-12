@@ -149,3 +149,5 @@ Article 03 的內容主線為：確認事實、辨認解讀、找到自己的承
 - 已生成 `assets/article-21-adult-ego-state-illustration.png`（1774×887 PNG）與 `audio_summaries/article_21_summary.mp3`（32 kHz MP3）。
 - 本機預覽：`http://127.0.0.1:5200/preview-article21.html?preview=20260912`；預覽頁另提供口播播放器，正式文章仍依規則只在目錄卡片提供播放摘要。
 - 已通過 `python3 scripts/build_article_hub.py`、`python3 -m unittest scripts/test_admin_cache.py scripts/test_dynamic_publishing.py`、`node --check assets/admin.js`，並以 Chrome 驗證無 console error。尚未發布、尚未推送或部署。
+- 2026-09-12：因 Chrome 快取曾顯示舊預覽，重新以 `?preview=20260912-v2` 驗證；畫面無 `**` Markdown 符號，口播無延遲控制碼，音訊約 63 秒，主圖與表格均正常。
+- 口播規則：固定開場與結尾保留，但不得把 `<#...#>` 延遲標記寫入口播稿或送進 TTS；產檔前需以純文字檢查控制碼。

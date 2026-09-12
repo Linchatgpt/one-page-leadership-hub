@@ -14,6 +14,10 @@ def inject_pwa(document):
         return document
     return document.replace('</head>', PWA_HEAD+'</head>').replace('</body>', PWA_SCRIPT+'</body>')
 
+def inline_html(value):
+    escaped = html.escape(str(value))
+    return re.sub(r'\*\*(.+?)\*\*|__(.+?)__', lambda match: '<strong>'+ (match.group(1) or match.group(2)) +'</strong>', escaped)
+
 def video_html(url):
     url = str(url or '').strip()
     if not url:
@@ -28,7 +32,7 @@ def md_to_html(text):
     out=[]; para=[]; table_rows=[]; in_ul=False; summary_open=False; seen_h1=False
     def flush():
         nonlocal para
-        if para: out.append('<p>'+ '<br>'.join(para) +'</p>'); para=[]
+        if para: out.append('<p>'+ '<br>'.join(inline_html(line) for line in para) +'</p>'); para=[]
     def flush_table():
         nonlocal table_rows
         if not table_rows: return
