@@ -10,6 +10,7 @@ const text = (value, fallback = '') => {
   if (typeof value === 'object') return Object.values(value).map((item) => text(item)).filter(Boolean).join('<br><br>');
   return String(value).replace(/\\["']/g, '"').replace(/。；/g, '。').replace(/；。/g, '。');
 };
+const inline = (value) => esc(value).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/__(.+?)__/g, '<strong>$1</strong>');
 
 const SUBSCRIPTION_URL = 'https://script.google.com/macros/s/AKfycbzYRJwtPdcxHQvdcskw1culJfrb6q2-JqJ6F__To56XfvMw8VHDJEv6quyVmMAS8EIu/exec?source=%E7%B2%BE%E8%90%83%E9%A0%98%E5%B0%8E%E2%84%A2%E5%AD%B8%E7%BF%92%E4%B8%AD%E5%BF%83';
 
@@ -26,7 +27,7 @@ function markdownHtml(markdown, tools) {
   let paragraph = [];
   let list = [];
   const flush = () => {
-    if (paragraph.length) out.push(`<p>${paragraph.map((line) => esc(line)).join('<br>')}</p>`);
+    if (paragraph.length) out.push(`<p>${paragraph.map((line) => inline(line)).join('<br>')}</p>`);
     paragraph = [];
     if (list.length) out.push(`<ul>${list.map((item) => `<li>${esc(item)}</li>`).join('')}</ul>`);
     list = [];
@@ -41,9 +42,9 @@ function markdownHtml(markdown, tools) {
     }
     const marker = line.match(/^<!--\s*TOOL_([123])\s*-->|^__TOOL_([123])__$/i);
     if (marker) { flush(); const tool = tools[Number(marker[1] || marker[2]) - 1]; if (tool) out.push(toolHtml(tool)); index += 1; continue; }
-    if (/^###\s+/.test(line)) { flush(); out.push(`<h3>${esc(line.replace(/^###\s+/, ''))}</h3>`); index += 1; continue; }
-    if (/^##\s+/.test(line)) { flush(); out.push(`<h2>${esc(line.replace(/^##\s+/, ''))}</h2>`); index += 1; continue; }
-    if (/^#\s+/.test(line)) { flush(); out.push(`<h2>${esc(line.replace(/^#\s+/, ''))}</h2>`); index += 1; continue; }
+    if (/^###\s+/.test(line)) { flush(); out.push(`<h3>${inline(line.replace(/^###\s+/, ''))}</h3>`); index += 1; continue; }
+    if (/^##\s+/.test(line)) { flush(); out.push(`<h2>${inline(line.replace(/^##\s+/, ''))}</h2>`); index += 1; continue; }
+    if (/^#\s+/.test(line)) { flush(); out.push(`<h2>${inline(line.replace(/^#\s+/, ''))}</h2>`); index += 1; continue; }
     if (/^-\s+/.test(line)) { if (paragraph.length) flush(); list.push(line.replace(/^-\s+/, '')); index += 1; continue; }
     paragraph.push(line.replace(/^>\s*/, '')); index += 1;
   }
@@ -92,6 +93,6 @@ export default function renderArticle(article = {}) {
   const videoHtml = a.video_url ? `<aside class="external-video"><small class="kicker">延伸影音</small><a href="${esc(a.video_url)}" target="_blank" rel="noopener">在 YouTube 觀看影片 →</a></aside>` : '';
   const orientation = (Array.isArray(a.orientation) ? a.orientation : []).map((item) => `<li>${esc(text(item))}</li>`).join('');
   const selfReview = (a.questions || []).length ? `<details class="self-review"><summary><span><small>SELF REVIEW</small><strong>自我整理（${a.questions.length}題）</strong></span><b>點擊展開／收起</b></summary><div class="self-review-body"><div class="assess">${questionsHtml(a.questions)}</div><div class="assessment-actions"><button class="button" id="submitAssessment">整理我的學習焦點</button><button class="clear-button" id="clearAssessment">清除自我整理</button></div><p id="assessmentMessage" class="assessment-message" aria-live="polite"></p><div id="assessmentResult" class="result"></div></div></details>` : '';
-  const clientArticle = { ...a, body_markdown: String(a.body_markdown || '').replace(/<!--\s*TOOL_[123]\s*-->|__TOOL_[123]__/gi, '') };
+  const clientArticle = { ...a, body_markdown: String(a.body_markdown || '').replace(/<!--\s*TOOL_[123]\s*-->|__TOOL_[123]__/gi, '').replace(/\*\*(.*?)\*\*/gs, '$1').replace(/__(.*?)__/gs, '$1') };
   return `<!doctype html><html lang="zh-Hant-TW"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>${esc(title)}｜精萃領導™學習中心</title><meta name="description" content="${esc(summary)}"><link rel="stylesheet" href="/assets/article-learning.css?v=dynamic-article-1"><link rel="manifest" href="/manifest.webmanifest"></head><body><div class="top article-top"><a class="brand" href="/" aria-label="返回精萃領導TM學習中心"><i>LE</i> 精萃領導™學習中心</a><span class="save" id="saveStatus">已發布</span></div><div class="layout"><aside class="side"><small>ARTICLE ${esc(number)}</small><h2>${esc(title)}</h2><nav aria-label="文章段落"><a href="#s1">01 深入閱讀</a><a href="#s2">02 情境案例</a><a href="#s3">03 自我整理</a><a href="#s4">04 工作紀錄</a><a href="#s5">05 行動承諾</a></nav></aside><main><section class="hero"><small class="kicker">${esc(category)} · ${esc(a.reading_minutes || 8)} MIN READ</small><h1>${esc(title)}</h1><h2 class="hero-subtitle">${esc(subtitle)}</h2><p class="lead">${esc(summary)}</p><div class="dark"><small>開始前，先想一想</small><h3>${esc(text(a.start_prompt, '讀完這篇文章後，你想帶回哪一個工作情境？'))}</h3><label>我的第一個念頭<textarea id="startPrompt" data-key="startPrompt" rows="2" placeholder="寫下一句就好"></textarea></label></div></section>${imageHtml}<section id="s1"><div class="head"><small class="kicker">01 深入閱讀</small><h2>實用概念</h2><p>把文章中的觀點轉成你今天能辨認的工作訊號。</p></div>${orientation ? `<div class="reading-brief"><span class="brief-label">ONE-MINUTE ORIENTATION</span><h3>閱讀時，請留意四個轉折</h3><ul>${orientation}</ul></div>` : ''}${quickScan.length ? `<details class="quick-scan"><summary><span><small>BEFORE YOU READ</small><strong>課前情境快問快答（${quickScan.length}題）</strong></span><b>點擊展開／收起</b></summary><div class="quick-scan-body"><p class="scan-intro">請依直覺選擇。這不是測驗，沒有標準答案。</p>${scanHtml(quickScan)}</div></details>` : ''}<article class="reading-essay">${body}${videoHtml}</article></section><section id="s2"><div class="head"><small class="kicker">02 情境案例</small><h2>帶回現場</h2><p>${caseContent}</p></div><textarea id="caseNote" data-key="caseNote" rows="6" placeholder="寫下你的處理方式"></textarea></section><section id="s3"><div class="head"><small class="kicker">03 自我整理</small><h2>整理焦點</h2><p>把剛才的直覺整理成一個工作焦點。沒有標準答案，請選最接近你目前狀態的句子。</p></div>${selfReview}</section><section id="s4"><div class="head"><small class="kicker">04 工作紀錄</small><h2>留下觀察</h2></div><div class="simple-record"><label>我在工作中注意到……<textarea id="observation" data-key="observation" rows="4"></textarea></label><label>給自己的話<textarea id="personalNote" data-key="personalNote" rows="3"></textarea></label></div></section><section id="s5"><div class="head"><small class="kicker">05 行動承諾</small><h2>我的實踐</h2><div class="experiment-focus" id="focusTip">先完成自我整理，這裡會顯示你的發展焦點。</div></div><div class="simple-record action-commitment"><label>我會試做……<textarea id="commitment" data-key="commitment" rows="4"></textarea></label><label class="action-date">預計日期 <input id="commitmentDate" data-key="commitmentDate" type="date"></label></div></section><footer class="site-footer article-footer"><div><strong>精萃領導™學習中心</strong><a href="https://leading4elite.com/about_wesley/" target="_blank" rel="noopener">林祖威教練</a><a href="https://mail.google.com/mail/?view=cm&amp;fs=1&amp;to=wesley.lin%40leading4elite.com" target="_blank" rel="noopener">wesley.lin@leading4elite.com</a><a class="subscribe-link" href="${SUBSCRIPTION_URL}" target="_blank" rel="noopener">訂閱學習更新</a></div><img src="/assets/line-qr.png" alt="加入 LINE 諮詢領導課程"></footer></main></div><script>window.ARTICLE_DATA=${JSON.stringify(clientArticle)};</script><script src="/assets/article-learning.js"></script><script src="/assets/article-live-video.js" defer></script></body></html>`;
 }

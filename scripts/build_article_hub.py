@@ -14,6 +14,10 @@ def inject_pwa(document):
         return document
     return document.replace('</head>', PWA_HEAD+'</head>').replace('</body>', PWA_SCRIPT+'</body>')
 
+def inline_html(value):
+    escaped = html.escape(str(value))
+    return re.sub(r'\*\*(.+?)\*\*|__(.+?)__', lambda match: '<strong>'+ (match.group(1) or match.group(2)) +'</strong>', escaped)
+
 def video_html(url):
     url = str(url or '').strip()
     if not url:
@@ -28,7 +32,7 @@ def md_to_html(text):
     out=[]; para=[]; table_rows=[]; in_ul=False; summary_open=False; seen_h1=False
     def flush():
         nonlocal para
-        if para: out.append('<p>'+ '<br>'.join(para) +'</p>'); para=[]
+        if para: out.append('<p>'+ '<br>'.join(inline_html(line) for line in para) +'</p>'); para=[]
     def flush_table():
         nonlocal table_rows
         if not table_rows: return
@@ -214,7 +218,7 @@ def main():
     for folder in sorted(ARTICLES.iterdir(), reverse=True):
         if not folder.is_dir(): continue
         article_id=str(json.loads((folder/'article.json').read_text()).get('id',''))
-        if re.fullmatch(r'article_(?:0[1-9]|1[0-9]|20)', article_id):
+        if re.fullmatch(r'article_(?:0[1-9]|1[0-9]|2[01])', article_id):
             article_folders.append(folder)
     card_groups=[]
     for start in range(0,len(article_folders),4):
@@ -260,7 +264,7 @@ def main():
         # from the cloud API so local/browser leftovers cannot be bundled into
         # the deployed workbench as if they were published records.
         article_id=str(data.get('id',''))
-        if not re.fullmatch(r'article_(?:0[1-9]|1[0-8])', article_id): continue
+        if not re.fullmatch(r'article_(?:0[1-9]|1[0-9]|2[01])', article_id): continue
         source_markdown=folder/'article.md'
         if source_markdown.is_file(): data['body_markdown']=source_markdown.read_text()
         data['page']=f'Article_Learning_{data["id"].replace("article_", "Article")}.html'

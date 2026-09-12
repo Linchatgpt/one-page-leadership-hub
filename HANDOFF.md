@@ -140,3 +140,33 @@ Article 03 的內容主線為：確認事實、辨認解讀、找到自己的承
 - ARTICLE 20 已以共用正式文章模板發布，文章 ID 為 `article_20`。
 - 主圖為 `assets/article-20-fact-interpretation-illustration.png`；工具卡已轉為 renderer 可辨識的結構。
 - 建置器與動態發布編號基準已更新到 19，避免後續自動編號覆蓋 ARTICLE 20。
+
+## ARTICLE 21 草稿匯入（2026-09-12）
+
+- 原始 TXT 已保存為 `content/articles/article_21/article.md`，設定檔標記為 `draft`。
+- ARTICLE 21 已完成預覽準備：顯示標題為「維持成人自我狀態」，正文仍保留完整原文。
+- 已加入標準 `quick_scan` 3 題、`questions` 4 題、兩個 inline tools、表格與 `conclusion_points`；課前與自我整理均預設收合。
+- 已生成 `assets/article-21-adult-ego-state-illustration.png`（1774×887 PNG）與 `audio_summaries/article_21_summary.mp3`（32 kHz MP3）。
+- 本機預覽：`http://127.0.0.1:5200/preview-article21.html?preview=20260912`；預覽頁另提供口播播放器，正式文章仍依規則只在目錄卡片提供播放摘要。
+- 已通過 `python3 scripts/build_article_hub.py`、`python3 -m unittest scripts/test_admin_cache.py scripts/test_dynamic_publishing.py`、`node --check assets/admin.js`，並以 Chrome 驗證無 console error。尚未發布、尚未推送或部署。
+- 2026-09-12：因 Chrome 快取曾顯示舊預覽，重新以 `?preview=20260912-v2` 驗證；畫面無 `**` Markdown 符號，口播無延遲控制碼，音訊約 63 秒，主圖與表格均正常。
+- 口播規則：固定開場與結尾保留，但不得把 `<#...#>` 延遲標記寫入口播稿或送進 TTS；產檔前需以純文字檢查控制碼。
+- 最新預覽已依標註刪除團隊日常段落，並平衡「把主管答案延後一輪」工具卡與結語；驗證網址為 `http://127.0.0.1:5200/preview-article21.html?preview=20260912-v3`。
+
+## ARTICLE 21 內容精煉版（2026-09-12）
+
+- ARTICLE 21 已依 ARTICLE 17、19、20 的重複觀點重新精煉，核心改為成人自我狀態在權力不對等下如何同時保留主管責任與部屬思考權。
+- 正文現保留一個跨部門案例、成人對話四步框架與兩張工具卡；自我整理題目已同步改寫，避免再次重複前文的沉默與注意力練習。
+- 口播文字與 MP3 已同步更新；預覽頁重新產生為 `http://127.0.0.1:5200/preview-article21.html?preview=20260912-v4`。
+- 已通過 `python3 scripts/build_article_hub.py`、`python3 -m unittest scripts/test_admin_cache.py` 與 `python3 scripts/test_article21_quality.py`。尚未發布、尚未合併 main、尚未推送或部署。
+
+## ARTICLE 21 雲端草稿登錄（2026-09-12）
+
+- ARTICLE 21 精煉版已寫入 Netlify 雲端草稿儲存，沿用 `article_21`，目前狀態為 `draft`；API 驗證可取得標題「維持成人自我狀態」、正文 1750 字元、2 張工具卡與 4 題自我整理。
+- 雲端工作台目前仍可能看不到它，因為正式網站的前端清單容錯修正尚未部署；修正提交為 `6d5bb46`，不涉及文章發布。
+
+## ARTICLE 21 正式發布（2026-09-12）
+
+- ARTICLE 21 已依確認版本發布至雲端 `leadership-articles`，並刪除 `leadership-article-drafts/article_21`，雲端已驗證為已發布且含口播資料。
+- 本機正式建置已納入 ARTICLE 21，產生 `Article_Learning_Article21.html` 與新版 `index.html`；目前尚未推送 GitHub 或部署 Netlify。
+- 發布後網址：`https://one-page-leadership-hub.netlify.app/article?id=article_21`。
