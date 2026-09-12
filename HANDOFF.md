@@ -151,3 +151,4 @@ Article 03 的內容主線為：確認事實、辨認解讀、找到自己的承
 - 已通過 `python3 scripts/build_article_hub.py`、`python3 -m unittest scripts/test_admin_cache.py scripts/test_dynamic_publishing.py`、`node --check assets/admin.js`，並以 Chrome 驗證無 console error。尚未發布、尚未推送或部署。
 - 2026-09-12：因 Chrome 快取曾顯示舊預覽，重新以 `?preview=20260912-v2` 驗證；畫面無 `**` Markdown 符號，口播無延遲控制碼，音訊約 63 秒，主圖與表格均正常。
 - 口播規則：固定開場與結尾保留，但不得把 `<#...#>` 延遲標記寫入口播稿或送進 TTS；產檔前需以純文字檢查控制碼。
+- 最新預覽已依標註刪除團隊日常段落，並平衡「把主管答案延後一輪」工具卡與結語；驗證網址為 `http://127.0.0.1:5200/preview-article21.html?preview=20260912-v3`。
