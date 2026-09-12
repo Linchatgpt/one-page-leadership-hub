@@ -144,4 +144,8 @@ Article 03 的內容主線為：確認事實、辨認解讀、找到自己的承
 ## ARTICLE 21 草稿匯入（2026-09-12）
 
 - 原始 TXT 已保存為 `content/articles/article_21/article.md`，設定檔標記為 `draft`。
-- 尚未整理互動欄位、主圖、音訊或正式頁；需另行確認後才可進入預覽與發布流程。
+- ARTICLE 21 已完成預覽準備：顯示標題為「維持成人自我狀態」，正文仍保留完整原文。
+- 已加入標準 `quick_scan` 3 題、`questions` 4 題、兩個 inline tools、表格與 `conclusion_points`；課前與自我整理均預設收合。
+- 已生成 `assets/article-21-adult-ego-state-illustration.png`（1774×887 PNG）與 `audio_summaries/article_21_summary.mp3`（32 kHz MP3）。
+- 本機預覽：`http://127.0.0.1:5200/preview-article21.html?preview=20260912`；預覽頁另提供口播播放器，正式文章仍依規則只在目錄卡片提供播放摘要。
+- 已通過 `python3 scripts/build_article_hub.py`、`python3 -m unittest scripts/test_admin_cache.py scripts/test_dynamic_publishing.py`、`node --check assets/admin.js`，並以 Chrome 驗證無 console error。尚未發布、尚未推送或部署。
