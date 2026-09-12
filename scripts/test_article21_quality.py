@@ -10,6 +10,7 @@ class Article21QualityTests(unittest.TestCase):
         preview = (ROOT / "preview-article21.html").read_text()
         audio = (ROOT / "audio_summaries/article_21_summary.txt").read_text()
         self.assertNotIn("**", preview)
+        self.assertNotIn("把成人自我狀態變成團隊日常", preview)
         self.assertNotIn("<#", audio)
         self.assertNotIn("0050", audio)
 
