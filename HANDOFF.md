@@ -152,3 +152,10 @@ Article 03 的內容主線為：確認事實、辨認解讀、找到自己的承
 - 2026-09-12：因 Chrome 快取曾顯示舊預覽，重新以 `?preview=20260912-v2` 驗證；畫面無 `**` Markdown 符號，口播無延遲控制碼，音訊約 63 秒，主圖與表格均正常。
 - 口播規則：固定開場與結尾保留，但不得把 `<#...#>` 延遲標記寫入口播稿或送進 TTS；產檔前需以純文字檢查控制碼。
 - 最新預覽已依標註刪除團隊日常段落，並平衡「把主管答案延後一輪」工具卡與結語；驗證網址為 `http://127.0.0.1:5200/preview-article21.html?preview=20260912-v3`。
+
+## ARTICLE 21 內容精煉版（2026-09-12）
+
+- ARTICLE 21 已依 ARTICLE 17、19、20 的重複觀點重新精煉，核心改為成人自我狀態在權力不對等下如何同時保留主管責任與部屬思考權。
+- 正文現保留一個跨部門案例、成人對話四步框架與兩張工具卡；自我整理題目已同步改寫，避免再次重複前文的沉默與注意力練習。
+- 口播文字與 MP3 已同步更新；預覽頁重新產生為 `http://127.0.0.1:5200/preview-article21.html?preview=20260912-v4`。
+- 已通過 `python3 scripts/build_article_hub.py`、`python3 -m unittest scripts/test_admin_cache.py` 與 `python3 scripts/test_article21_quality.py`。尚未發布、尚未合併 main、尚未推送或部署。
