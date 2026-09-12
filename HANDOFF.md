@@ -140,3 +140,8 @@ Article 03 的內容主線為：確認事實、辨認解讀、找到自己的承
 - ARTICLE 20 已以共用正式文章模板發布，文章 ID 為 `article_20`。
 - 主圖為 `assets/article-20-fact-interpretation-illustration.png`；工具卡已轉為 renderer 可辨識的結構。
 - 建置器與動態發布編號基準已更新到 19，避免後續自動編號覆蓋 ARTICLE 20。
+
+## ARTICLE 21 草稿匯入（2026-09-12）
+
+- 原始 TXT 已保存為 `content/articles/article_21/article.md`，設定檔標記為 `draft`。
+- 尚未整理互動欄位、主圖、音訊或正式頁；需另行確認後才可進入預覽與發布流程。

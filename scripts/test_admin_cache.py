@@ -84,7 +84,7 @@ class AdminCachePolicyTest(unittest.TestCase):
         article_ids = sorted(
             path.parent.name
             for path in (ROOT / 'content' / 'articles').glob('article_*/article.json')
-            if path.parent.name not in {'article_19', 'article_20'}
+            if path.parent.name not in {'article_19', 'article_20', 'article_21'}
         )
         self.assertEqual(article_ids, [f'article_{index:02d}' for index in range(1, 19)])
 
