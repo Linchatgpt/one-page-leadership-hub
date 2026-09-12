@@ -164,3 +164,9 @@ Article 03 的內容主線為：確認事實、辨認解讀、找到自己的承
 
 - ARTICLE 21 精煉版已寫入 Netlify 雲端草稿儲存，沿用 `article_21`，目前狀態為 `draft`；API 驗證可取得標題「維持成人自我狀態」、正文 1750 字元、2 張工具卡與 4 題自我整理。
 - 雲端工作台目前仍可能看不到它，因為正式網站的前端清單容錯修正尚未部署；修正提交為 `6d5bb46`，不涉及文章發布。
+
+## ARTICLE 21 正式發布（2026-09-12）
+
+- ARTICLE 21 已依確認版本發布至雲端 `leadership-articles`，並刪除 `leadership-article-drafts/article_21`，雲端已驗證為已發布且含口播資料。
+- 本機正式建置已納入 ARTICLE 21，產生 `Article_Learning_Article21.html` 與新版 `index.html`；目前尚未推送 GitHub 或部署 Netlify。
+- 發布後網址：`https://one-page-leadership-hub.netlify.app/article?id=article_21`。

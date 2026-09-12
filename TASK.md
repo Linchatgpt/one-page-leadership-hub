@@ -120,3 +120,9 @@
 - 已將精煉後的 ARTICLE 21 以原 ID `article_21` 寫入 Netlify 雲端草稿儲存，未建立重複文章。
 - 雲端資料已驗證包含精煉正文、2 張工作工具與 4 題自我整理，狀態為 `draft`。
 - 工作台清單載入已加入容錯：已取得的草稿不會因已發布清單 API 延遲或非 JSON 回應而消失；修正已保存於目前分支，等待日後部署。
+
+## ARTICLE 21 正式發布（2026-09-12）
+
+- 使用者確認後，ARTICLE 21 已以 `article_21` 發布至雲端，並清除同 ID 草稿，避免工作台與目錄重複。
+- 本機來源已標記為 `published`，建置器編號範圍納入 ARTICLE 21，產生固定文章頁與四篇分頁目錄結構。
+- 正式頁面：`https://one-page-leadership-hub.netlify.app/article?id=article_21`；等待 GitHub／Netlify 部署完成後，目錄固定版本才會更新。
