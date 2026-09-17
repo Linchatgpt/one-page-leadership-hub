@@ -1,5 +1,12 @@
 # Handoff
 
+## 2026-09-17：ARTICLE 22 正式發布
+
+- 「領導對話中的六種提問」已完成預覽確認並發布為 `article_22`。
+- 正式頁面：https://one-page-leadership-hub.netlify.app/Article_Learning_Article22.html
+- 主圖與口播 MP3 已納入版本庫；首頁文章卡可播放摘要音檔。
+- 本機建置、16 項管理工作台測試與正式網址驗證均通過。
+
 ## 2026-09-11：目錄統一靜態發布
 
 - 修改前穩定版本已標記為 `leadership-hub-before-unified-catalog-2026-09-11`。
