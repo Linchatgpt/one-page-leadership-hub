@@ -170,3 +170,9 @@ Article 03 的內容主線為：確認事實、辨認解讀、找到自己的承
 - ARTICLE 21 已依確認版本發布至雲端 `leadership-articles`，並刪除 `leadership-article-drafts/article_21`，雲端已驗證為已發布且含口播資料。
 - 本機正式建置已納入 ARTICLE 21，產生 `Article_Learning_Article21.html` 與新版 `index.html`；目前尚未推送 GitHub 或部署 Netlify。
 - 發布後網址：`https://one-page-leadership-hub.netlify.app/article?id=article_21`。
+
+## 目錄頁手機版 QR Code 對齊（2026-09-17）
+
+- `assets/article-learning.css` 已修正頁尾 flex 內容區的最小寬度與長網址換行，並讓 QR Code 在手機版往內容中心保留安全距離。
+- `scripts/build_article_hub.py` 已更新目錄 CSS query 版本，避免手機 Service Worker／瀏覽器沿用舊版 CSS。
+- 本機建置與測試通過；目前在 `main` 工作目錄有本次未提交修改，尚未推送或部署。

@@ -126,3 +126,9 @@
 - 使用者確認後，ARTICLE 21 已以 `article_21` 發布至雲端，並清除同 ID 草稿，避免工作台與目錄重複。
 - 本機來源已標記為 `published`，建置器編號範圍納入 ARTICLE 21，產生固定文章頁與四篇分頁目錄結構。
 - 正式頁面：`https://one-page-leadership-hub.netlify.app/article?id=article_21`；等待 GitHub／Netlify 部署完成後，目錄固定版本才會更新。
+
+## 目錄頁手機版 QR Code 對齊（2026-09-17）
+
+- 修正頁尾文字區長網址在手機版不換行，導致 QR Code 被推到視窗右側之外的問題。
+- 頁尾內容區允許縮小與換行，QR Code 保持固定尺寸並保留右側安全間距；目錄 CSS 版本更新為 `20260917-footer-qr`。
+- 已完成建置、JavaScript 語法檢查與 28 項測試；尚未部署。
