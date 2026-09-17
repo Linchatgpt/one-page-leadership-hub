@@ -15,6 +15,13 @@ class AdminCachePolicyTest(unittest.TestCase):
         source = (ROOT / 'scripts' / 'author_server.py').read_text()
         self.assertIn("Cache-Control', 'no-store", source)
 
+    def test_local_workbench_persists_drafts_and_audio_data(self):
+        source = (ROOT / 'scripts' / 'author_server.py').read_text()
+        self.assertIn("'/api/list-drafts'", source)
+        self.assertIn("'/api/save-draft'", source)
+        self.assertIn("article['status'] = 'draft'", source)
+        self.assertIn("json.dumps(article, ensure_ascii=False", source)
+
     def test_admin_script_only_adds_optional_video_field(self):
         source = (ROOT / 'assets' / 'admin.js').read_text()
         self.assertNotIn('文章主圖路徑', source)
@@ -84,7 +91,7 @@ class AdminCachePolicyTest(unittest.TestCase):
         article_ids = sorted(
             path.parent.name
             for path in (ROOT / 'content' / 'articles').glob('article_*/article.json')
-            if path.parent.name not in {'article_19', 'article_20', 'article_21'}
+            if path.parent.name not in {'article_19', 'article_20', 'article_21', 'article_22'}
         )
         self.assertEqual(article_ids, [f'article_{index:02d}' for index in range(1, 19)])
 

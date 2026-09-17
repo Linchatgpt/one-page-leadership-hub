@@ -4,6 +4,7 @@ from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+LOCAL_DRAFTS = ROOT / '.local_drafts'
 
 def clean_symbols(value):
     if isinstance(value, str):
@@ -33,6 +34,15 @@ def normalize_advanced_result(result):
     body = re.sub(r'\n{3,}', '\n\n', body).strip()
     result['body_markdown'] = body
     return result
+
+def normalize_preview_body(body):
+    """Keep short examples in the article body from becoming oversized headings."""
+    body = str(body or '').replace('\\n', '\n').replace('\r\n', '\n')
+    body = re.sub(r'^\s*導言[｜|:]?\s*$', '', body, flags=re.M)
+    body = re.sub(r'^##\s+(?:\*\*)?(可以直接使用：?)(?:\*\*)?\s*$', r'**\1**', body, flags=re.M)
+    body = re.sub(r'^##\s+(「[^\n]+」)\s*$', r'> \1', body, flags=re.M)
+    body = re.sub(r'^##\s+((?:部屬說|員工：|主管：)[^\n]+)\s*$', r'> \1', body, flags=re.M)
+    return re.sub(r'\n{3,}', '\n\n', body).strip()
 
 def normalize_quick_scan(value):
     if not isinstance(value, list):
@@ -101,6 +111,12 @@ class Handler(SimpleHTTPRequestHandler):
         if self.path == '/api/health':
             self.send_json(200, {'ok': True, 'project': 'one-page-leadership-hub'})
             return
+        if self.path == '/api/list-drafts':
+            self.list_local_drafts()
+            return
+        if self.path == '/api/list-published':
+            self.send_json(200, [])
+            return
         super().do_GET()
 
     def do_POST(self):
@@ -112,6 +128,9 @@ class Handler(SimpleHTTPRequestHandler):
             return
         if self.path == '/api/save-published':
             self.save_published_article()
+            return
+        if self.path == '/api/save-draft':
+            self.save_local_draft()
             return
         if self.path == '/api/delete-draft':
             self.delete_draft()
@@ -165,7 +184,37 @@ class Handler(SimpleHTTPRequestHandler):
             payload = json.loads(self.rfile.read(length) or '{}')
             if not str(payload.get('id', '')).strip():
                 raise ValueError('缺少草稿 ID')
+            draft_path = LOCAL_DRAFTS / (str(payload['id']).replace('/', '_') + '.json')
+            if draft_path.is_file():
+                draft_path.unlink()
             self.send_json(200, {'ok': True, 'local_only': True})
+        except Exception as exc:
+            self.send_json(400, {'error': str(exc)})
+
+    def list_local_drafts(self):
+        drafts = []
+        if LOCAL_DRAFTS.is_dir():
+            for path in sorted(LOCAL_DRAFTS.glob('*.json'), reverse=True):
+                try:
+                    item = json.loads(path.read_text())
+                except (OSError, json.JSONDecodeError):
+                    continue
+                if isinstance(item, dict):
+                    drafts.append(item)
+        self.send_json(200, drafts)
+
+    def save_local_draft(self):
+        try:
+            length = int(self.headers.get('Content-Length', '0'))
+            article = json.loads(self.rfile.read(length) or '{}')
+            article_id = str(article.get('id', '')).strip()
+            if not article_id:
+                raise ValueError('缺少草稿 ID')
+            article['status'] = 'draft'
+            LOCAL_DRAFTS.mkdir(parents=True, exist_ok=True)
+            path = LOCAL_DRAFTS / (article_id.replace('/', '_') + '.json')
+            path.write_text(json.dumps(article, ensure_ascii=False, indent=2) + '\n')
+            self.send_json(200, {'ok': True, 'local_only': True, 'id': article_id})
         except Exception as exc:
             self.send_json(400, {'error': str(exc)})
 
@@ -191,6 +240,7 @@ class Handler(SimpleHTTPRequestHandler):
                 if not isinstance(article.get(field), str):
                     article[field] = json.dumps(article.get(field), ensure_ascii=False) if article.get(field) is not None else ''
             article['reading_minutes'] = int(article.get('reading_minutes') or 10)
+            article['body_markdown'] = normalize_preview_body(article.get('body_markdown', ''))
             article['orientation'] = [str(item) for item in (article.get('orientation') if isinstance(article.get('orientation'), list) else []) if item]
             article['quick_scan'] = [item for item in (article.get('quick_scan') if isinstance(article.get('quick_scan'), list) else []) if isinstance(item, dict) and item.get('question')]
             for item in article['quick_scan']:
@@ -214,6 +264,7 @@ class Handler(SimpleHTTPRequestHandler):
                 normalized_tools.append(item)
             article['tools'] = normalized_tools
             article = normalize_advanced_result(article)
+            article['body_markdown'] = normalize_preview_body(article.get('body_markdown', ''))
             renderer = "import fs from 'node:fs'; import renderArticle from './netlify/functions/lib/render-article.mjs'; process.stdout.write(renderArticle(JSON.parse(fs.readFileSync(0, 'utf8'))));"
             rendered = subprocess.run(
                 ['node', '--input-type=module', '-e', renderer],
@@ -223,6 +274,7 @@ class Handler(SimpleHTTPRequestHandler):
             if rendered.returncode != 0:
                 raise RuntimeError(rendered.stderr.strip() or '共用文章模板渲染失敗')
             html = rendered.stdout
+            html = html.replace('id="saveStatus">已發布', 'id="saveStatus">預覽中')
             html = html.replace('</div></footer>', '<a href="/author-admin.html">回到文章工作台</a></div></footer>')
             self.send_response(200)
             raw = html.encode('utf-8')
