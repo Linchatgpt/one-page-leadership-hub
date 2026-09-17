@@ -176,3 +176,16 @@ Article 03 的內容主線為：確認事實、辨認解讀、找到自己的承
 - `assets/article-learning.css` 已修正頁尾 flex 內容區的最小寬度與長網址換行，並讓 QR Code 在手機版往內容中心保留安全距離。
 - `scripts/build_article_hub.py` 已更新目錄 CSS query 版本，避免手機 Service Worker／瀏覽器沿用舊版 CSS。
 - 本機建置與測試通過；目前在 `main` 工作目錄有本次未提交修改，尚未推送或部署。
+
+## ARTICLE 22 新增（2026-09-17）
+
+- ARTICLE 22 來源位於 `content/articles/article_22/article.md` 與 `article.json`，主題為依對話狀態切換六種提問方式。
+- 已加入兩張工具卡、三題課前快問快答、四題自我整理，以及主圖 `assets/article-22-six-questioning-modes-illustration.png`。
+- 建置器已允許 `article_22` 出現在作者工作台資料中；本篇摘要音檔設定為停用。
+- 已完成本機建置、15 項 `scripts/test_admin_cache.py` 測試與瀏覽器驗證：主圖、表格、2 張工具卡、3 題課前題目與 4 題自我整理均正常。尚未提交、推送或部署。
+
+## 作者工作台本機草稿保存修正（2026-09-17）
+
+- 根因是本機 `author_server.py` 沒有實作工作臺呼叫的 `/api/list-drafts`、`/api/save-draft`，所以口播生成成功後保存請求回傳 404。
+- 已補上本機草稿清單、保存與刪除流程，草稿中的口播稿與 Base64 音檔會保存於 `.local_drafts/`；該目錄已加入 `.gitignore`，不會提交到 Git。
+- 已通過 16 項管理工作臺測試；需要重新啟動 `PORT=5200 python3 scripts/author_server.py` 後生效。

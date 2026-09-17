@@ -218,7 +218,7 @@ def main():
     for folder in sorted(ARTICLES.iterdir(), reverse=True):
         if not folder.is_dir(): continue
         article_id=str(json.loads((folder/'article.json').read_text()).get('id',''))
-        if re.fullmatch(r'article_(?:0[1-9]|1[0-9]|2[01])', article_id):
+        if re.fullmatch(r'article_(?:0[1-9]|1[0-9]|2[0-2])', article_id):
             article_folders.append(folder)
     card_groups=[]
     for start in range(0,len(article_folders),4):
@@ -265,7 +265,7 @@ def main():
         # from the cloud API so local/browser leftovers cannot be bundled into
         # the deployed workbench as if they were published records.
         article_id=str(data.get('id',''))
-        if not re.fullmatch(r'article_(?:0[1-9]|1[0-9]|2[01])', article_id): continue
+        if not re.fullmatch(r'article_(?:0[1-9]|1[0-9]|2[0-2])', article_id): continue
         source_markdown=folder/'article.md'
         if source_markdown.is_file(): data['body_markdown']=source_markdown.read_text()
         data['page']=f'Article_Learning_{data["id"].replace("article_", "Article")}.html'

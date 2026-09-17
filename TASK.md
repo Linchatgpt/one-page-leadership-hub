@@ -132,3 +132,16 @@
 - 修正頁尾文字區長網址在手機版不換行，導致 QR Code 被推到視窗右側之外的問題。
 - 頁尾內容區允許縮小與換行，QR Code 保持固定尺寸並保留右側安全間距；目錄 CSS 版本更新為 `20260917-footer-qr`。
 - 已完成建置、JavaScript 語法檢查與 28 項測試；尚未部署。
+
+## ARTICLE 22 新增（2026-09-17）
+
+- 已將「主管不是問得越多越好：六種提問方式，讓管理對話真正深入」加入 `content/articles/article_22/`。
+- 已整理六種提問的課前題目、情境案例、四題自我整理、兩張工作工具卡、SEO 欄位與總結提要。
+- 已生成專屬主圖 `assets/article-22-six-questioning-modes-illustration.png`；本篇未啟用摘要音檔。
+- 建置器作者工作台清單範圍已納入 ARTICLE 22；尚未推送 GitHub、合併 `main` 或部署 Netlify。
+
+## 作者工作台本機草稿保存修正（2026-09-17）
+
+- 修正 `author_server.py` 缺少 `/api/list-drafts` 與 `/api/save-draft`，導致口播稿與音檔生成後顯示「本機已保存，雲端同步失敗」的問題。
+- 本機工作臺現在會將草稿與 `audio_data` 保存於未納管的 `.local_drafts/`，不再只留在瀏覽器暫存；刪除草稿時也會同步移除本機保存檔。
+- 已通過 16 項 `scripts/test_admin_cache.py` 測試；尚未推送或部署。
